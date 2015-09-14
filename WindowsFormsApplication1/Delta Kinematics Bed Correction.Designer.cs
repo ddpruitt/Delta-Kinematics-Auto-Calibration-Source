@@ -1,4 +1,6 @@
-﻿namespace deltaKinematics
+﻿using DeltaKinematics.Core;
+
+namespace deltaKinematics
 {
     partial class Form1
     {
@@ -6,6 +8,8 @@
         /// Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
+
+        
 
         /// <summary>
         /// Clean up any resources being used.

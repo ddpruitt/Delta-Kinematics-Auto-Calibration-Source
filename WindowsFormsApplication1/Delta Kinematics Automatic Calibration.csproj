@@ -123,6 +123,12 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DeltaKinematics.Core\DeltaKinematics.Core.csproj">
+      <Project>{93dbaf95-4f22-412f-8d97-0f179db98038}</Project>
+      <Name>DeltaKinematics.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -3,20 +3,20 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO.Ports;
-using System.Diagnostics;
 using System.Threading;
+using DeltaKinematics.Core;
 
 namespace deltaKinematics
 {
     public partial class Form1 : Form
     {
+        public Iterations Iterations { get; } = new Iterations();
+
+        public ProbeHeight ProbeHeight { get; }
+
         string versionState = "2.0.4PA";
         string wait = "wait";
         //////////////////////////
@@ -24,25 +24,10 @@ namespace deltaKinematics
         private int zProbeSet = 0;
         private int advancedCalibration = 0;
         private int advancedCalCount = 0;
-        private int maxIterations = 20;
         private int calculationCount = 0;
         private int calculationCheckCount = 0;
         private int pauseTimeSet = 1000;
-        private int iterationNum = 0;
         private int j = 0;
-        private double centerIterations = 0;
-        private double xIterations = 0;
-        private double xOppIterations = 0;
-        private double yIterations = 0;
-        private double yOppIterations = 0;
-        private double zIterations = 0;
-        private double zOppIterations = 0;
-        private double X;
-        private double XOpp;
-        private double Y;
-        private double YOpp;
-        private double Z;
-        private double ZOpp;
         private double tempX;
         private double tempXOpp;
         private double tempY;
@@ -55,12 +40,14 @@ namespace deltaKinematics
         private double tempYOpp2;
         private double tempZ2;
         private double tempZOpp2;
+
         private double calculationX;
         private double calculationXOpp;
         private double calculationY;
         private double calculationYOpp;
         private double calculationZ;
         private double calculationZOpp;
+
         private double calculationTemp1;
         private double HRadCorrection;
         private double plateDiameter;
@@ -151,6 +138,7 @@ namespace deltaKinematics
         Boolean _initiatingCalibration = false;
         string _eepromString;
 
+
         private void setVariablesAll()
         {
             if (_serialPort.IsOpen)
@@ -158,7 +146,7 @@ namespace deltaKinematics
                 accuracy = Convert.ToDouble(textAccuracy.Text);
                 accuracy2 = Convert.ToDouble(textAccuracy2.Text);
 
-                maxIterations = int.Parse(textMaxIterations.Text);
+                Iterations.maxIterations = int.Parse(textMaxIterations.Text);
                 pauseTimeSet = int.Parse(textPauseTimeSet.Text);
                 probingHeight = int.Parse(textProbingHeight.Text);
 
@@ -212,31 +200,31 @@ namespace deltaKinematics
         public void setHeights()
         {
             //set base heights for advanced calibration comparison
-            if (iterationNum == 0)
+            if (Iterations.iterationNum == 0)
             {
-                Invoke((MethodInvoker)delegate { this.textXTemp.Text = Math.Round(X, 3).ToString(); });
-                Invoke((MethodInvoker)delegate { this.textXOppTemp.Text = Math.Round(XOpp, 3).ToString(); });
-                Invoke((MethodInvoker)delegate { this.textYTemp.Text = Math.Round(Y, 3).ToString(); });
-                Invoke((MethodInvoker)delegate { this.textYOppTemp.Text = Math.Round(YOpp, 3).ToString(); });
-                Invoke((MethodInvoker)delegate { this.textZTemp.Text = Math.Round(Z, 3).ToString(); });
-                Invoke((MethodInvoker)delegate { this.textZOppTemp.Text = Math.Round(ZOpp, 3).ToString(); });
+                Invoke((MethodInvoker)delegate { this.textXTemp.Text = Math.Round(ProbeHeight.X, 3).ToString(); });
+                Invoke((MethodInvoker)delegate { this.textXOppTemp.Text = Math.Round(ProbeHeight.XOpp, 3).ToString(); });
+                Invoke((MethodInvoker)delegate { this.textYTemp.Text = Math.Round(ProbeHeight.Y, 3).ToString(); });
+                Invoke((MethodInvoker)delegate { this.textYOppTemp.Text = Math.Round(ProbeHeight.YOpp, 3).ToString(); });
+                Invoke((MethodInvoker)delegate { this.textZTemp.Text = Math.Round(ProbeHeight.Z, 3).ToString(); });
+                Invoke((MethodInvoker)delegate { this.textZOppTemp.Text = Math.Round(ProbeHeight.ZOpp, 3).ToString(); });
                 
                 //calculate parameters
-                tempX = X;
-                tempXOpp = XOpp;
-                tempY = Y;
-                tempYOpp = YOpp;
-                tempZ = Z;
-                tempZOpp = ZOpp;
+                tempX = ProbeHeight.X;
+                tempXOpp = ProbeHeight.XOpp;
+                tempY = ProbeHeight.Y;
+                tempYOpp = ProbeHeight.YOpp;
+                tempZ = ProbeHeight.Z;
+                tempZOpp = ProbeHeight.ZOpp;
             }
             else
             {
-                Invoke((MethodInvoker)delegate { this.textX.Text = Math.Round(X, 3).ToString(); });
-                Invoke((MethodInvoker)delegate { this.textXOpp.Text = Math.Round(XOpp, 3).ToString(); });
-                Invoke((MethodInvoker)delegate { this.textY.Text = Math.Round(Y, 3).ToString(); });
-                Invoke((MethodInvoker)delegate { this.textYOpp.Text = Math.Round(YOpp, 3).ToString(); });
-                Invoke((MethodInvoker)delegate { this.textZ.Text = Math.Round(Z, 3).ToString(); });
-                Invoke((MethodInvoker)delegate { this.textZOpp.Text = Math.Round(ZOpp, 3).ToString(); });
+                Invoke((MethodInvoker)delegate { this.textX.Text = Math.Round(ProbeHeight.X, 3).ToString(); });
+                Invoke((MethodInvoker)delegate { this.textXOpp.Text = Math.Round(ProbeHeight.XOpp, 3).ToString(); });
+                Invoke((MethodInvoker)delegate { this.textY.Text = Math.Round(ProbeHeight.Y, 3).ToString(); });
+                Invoke((MethodInvoker)delegate { this.textYOpp.Text = Math.Round(ProbeHeight.YOpp, 3).ToString(); });
+                Invoke((MethodInvoker)delegate { this.textZ.Text = Math.Round(ProbeHeight.Z, 3).ToString(); });
+                Invoke((MethodInvoker)delegate { this.textZOpp.Text = Math.Round(ProbeHeight.ZOpp, 3).ToString(); });
             }
         }
 
@@ -279,6 +267,7 @@ namespace deltaKinematics
         {
             InitializeComponent();
             Init();
+            ProbeHeight = new ProbeHeight();
         }
 
         // Initialize the application.
@@ -610,12 +599,12 @@ namespace deltaKinematics
                                 zProbe = zMaxLength - Convert.ToDouble(parseFirstLine[1]);
                                 zProbeSet = 0;
                             }
-                            else if (centerIterations == iterationNum)
+                            else if (Iterations.centerIterations == Iterations.iterationNum)
                             {
                                 //LogMessage("Z-Probe Center Height: " + parseFirstLine[1] + "\n");
                                 centerHeight = Convert.ToDouble(parseFirstLine[1]);
 
-                                centerIterations++;
+                                Iterations.centerIterations++;
 
                                 _serialPort.WriteLine("G1 Z" + probingHeight.ToString() + " X0 Y0");
 
@@ -625,12 +614,12 @@ namespace deltaKinematics
                                 Thread.Sleep(pauseTimeSet);
                                 _serialPort.WriteLine("G30");
                             }
-                            else if (xIterations == iterationNum)
+                            else if (Iterations.xIterations == Iterations.iterationNum)
                             {
                                 //LogMessage("Z-Probe X Height: " + parseFirstLine[1] + "\n");
-                                X = Convert.ToDouble(parseFirstLine[1]);
+                                ProbeHeight.X = Convert.ToDouble(parseFirstLine[1]);
 
-                                xIterations++;
+                                Iterations.xIterations++;
 
                                 _serialPort.WriteLine("G1 Z" + probingHeight.ToString() + " X-" + valueXYLarge.ToString() + " Y-" + valueXYSmall.ToString());
                                 Thread.Sleep(pauseTimeSet);
@@ -640,12 +629,12 @@ namespace deltaKinematics
                                 Thread.Sleep(pauseTimeSet);
                                 _serialPort.WriteLine("G30");
                             }
-                            else if (xOppIterations == iterationNum)
+                            else if (Iterations.xOppIterations == Iterations.iterationNum)
                             {
                                 //LogMessage("Z-Probe X Opposite Height: " + parseFirstLine[1] + "\n");
-                                XOpp = Convert.ToDouble(parseFirstLine[1]);
+                                ProbeHeight.XOpp = Convert.ToDouble(parseFirstLine[1]);
 
-                                xOppIterations++;
+                                Iterations.xOppIterations++;
 
                                 _serialPort.WriteLine("G1 Z" + probingHeight.ToString() + " X" + valueXYLarge.ToString() + " Y" + valueXYSmall.ToString());
                                 Thread.Sleep(pauseTimeSet);
@@ -657,12 +646,12 @@ namespace deltaKinematics
                                 Thread.Sleep(pauseTimeSet);
                                 _serialPort.WriteLine("G30");
                             }
-                            else if (yIterations == iterationNum)
+                            else if (Iterations.yIterations == Iterations.iterationNum)
                             {
                                 //LogMessage("Z-Probe Y Height: " + parseFirstLine[1] + "\n");
-                                Y = Convert.ToDouble(parseFirstLine[1]);
+                                ProbeHeight.Y = Convert.ToDouble(parseFirstLine[1]);
 
-                                yIterations++;
+                                Iterations.yIterations++;
 
                                 _serialPort.WriteLine("G1 Z" + probingHeight.ToString() + " X" + valueXYLarge.ToString() + " Y-" + valueXYSmall.ToString());
                                 Thread.Sleep(pauseTimeSet);
@@ -672,12 +661,12 @@ namespace deltaKinematics
                                 Thread.Sleep(pauseTimeSet);
                                 _serialPort.WriteLine("G30");
                             }
-                            else if (yOppIterations == iterationNum)
+                            else if (Iterations.yOppIterations == Iterations.iterationNum)
                             {
                                 //LogMessage("Z-Probe Y Opposite Height: " + parseFirstLine[1] + "\n");
-                                YOpp = Convert.ToDouble(parseFirstLine[1]);
+                                ProbeHeight.YOpp = Convert.ToDouble(parseFirstLine[1]);
 
-                                yOppIterations++;
+                                Iterations.yOppIterations++;
 
                                 _serialPort.WriteLine("G1 Z" + probingHeight.ToString() + " X-" + valueXYLarge.ToString() + " Y" + valueXYSmall.ToString());
                                 Thread.Sleep(pauseTimeSet);
@@ -689,12 +678,12 @@ namespace deltaKinematics
                                 Thread.Sleep(pauseTimeSet);
                                 _serialPort.WriteLine("G30");
                             }
-                            else if (zIterations == iterationNum)
+                            else if (Iterations.zIterations == Iterations.iterationNum)
                             {
                                 //LogMessage("Z-Probe Z Height: " + parseFirstLine[1] + "\n");
-                                Z = Convert.ToDouble(parseFirstLine[1]);
+                                ProbeHeight.Z = Convert.ToDouble(parseFirstLine[1]);
 
-                                zIterations++;
+                                Iterations.zIterations++;
 
                                 _serialPort.WriteLine("G1 Z" + probingHeight.ToString() + " Y" + valueZ.ToString());
                                 Thread.Sleep(pauseTimeSet);
@@ -704,10 +693,10 @@ namespace deltaKinematics
                                 Thread.Sleep(pauseTimeSet);
                                 _serialPort.WriteLine("G30");
                             }
-                            else if (zOppIterations == iterationNum)
+                            else if (Iterations.zOppIterations == Iterations.iterationNum)
                             {
                                 //LogMessage("Z-Probe Z Opposite Height: " + parseFirstLine[1] + "\n");
-                                ZOpp = Convert.ToDouble(parseFirstLine[1]);
+                                ProbeHeight.ZOpp = Convert.ToDouble(parseFirstLine[1]);
 
                                 _serialPort.WriteLine("G1 Z" + probingHeight.ToString() + " Y-" + valueZ.ToString());
                                 Thread.Sleep(pauseTimeSet);
@@ -723,21 +712,21 @@ namespace deltaKinematics
                                 */
 
                                 centerHeight = zMaxLength - probingHeight + centerHeight;
-                                X = centerHeight - (zMaxLength - probingHeight + X);
-                                XOpp = centerHeight - (zMaxLength - probingHeight + XOpp);
-                                Y = centerHeight - (zMaxLength - probingHeight + Y);
-                                YOpp = centerHeight - (zMaxLength - probingHeight + YOpp);
-                                Z = centerHeight - (zMaxLength - probingHeight + Z);
-                                ZOpp = centerHeight - (zMaxLength - probingHeight + ZOpp);
+                                ProbeHeight.X = centerHeight - (zMaxLength - probingHeight + ProbeHeight.X);
+                                ProbeHeight.XOpp = centerHeight - (zMaxLength - probingHeight + ProbeHeight.XOpp);
+                                ProbeHeight.Y = centerHeight - (zMaxLength - probingHeight + ProbeHeight.Y);
+                                ProbeHeight.YOpp = centerHeight - (zMaxLength - probingHeight + ProbeHeight.YOpp);
+                                ProbeHeight.Z = centerHeight - (zMaxLength - probingHeight + ProbeHeight.Z);
+                                ProbeHeight.ZOpp = centerHeight - (zMaxLength - probingHeight + ProbeHeight.ZOpp);
                                 //centerHeight = 0;
 
                                 //invert values
-                                X = -X;
-                                XOpp = -XOpp;
-                                Y = -Y;
-                                YOpp = -YOpp;
-                                Z = -Z;
-                                ZOpp = -ZOpp;
+                                ProbeHeight.X = -ProbeHeight.X;
+                                ProbeHeight.XOpp = -ProbeHeight.XOpp;
+                                ProbeHeight.Y = -ProbeHeight.Y;
+                                ProbeHeight.YOpp = -ProbeHeight.YOpp;
+                                ProbeHeight.Z = -ProbeHeight.Z;
+                                ProbeHeight.ZOpp = -ProbeHeight.ZOpp;
 
                                 // Sets height-maps in separate function
                                 setHeights();
@@ -748,7 +737,7 @@ namespace deltaKinematics
 
                                 zMaxLength = centerHeight;
 
-                                zOppIterations++;
+                                Iterations.zOppIterations++;
 
                                 if (advancedCalibration == 1)
                                 {
@@ -772,8 +761,8 @@ namespace deltaKinematics
                                     else if (advancedCalCount == 1)
                                     {//get diagonal rod percentages
 
-                                        deltaTower = ((tempX - X) + (tempY - Y) + (tempZ - Z)) / 3;
-                                        deltaOpp = ((tempXOpp - XOpp) + (tempYOpp - YOpp) + (tempZOpp - ZOpp)) / 3;
+                                        deltaTower = ((tempX - ProbeHeight.X) + (tempY - ProbeHeight.Y) + (tempZ - ProbeHeight.Z)) / 3;
+                                        deltaOpp = ((tempXOpp - ProbeHeight.XOpp) + (tempYOpp - ProbeHeight.YOpp) + (tempZOpp - ProbeHeight.ZOpp)) / 3;
 
                                         if (_serialPort.IsOpen)
                                         {
@@ -794,7 +783,7 @@ namespace deltaKinematics
                                     }
                                     else if (advancedCalCount == 2)
                                     {//get HRad percentages
-                                        HRadRatio = -(Math.Abs((X - tempX) + (Y - tempY) + (Z - tempZ) + (XOpp - tempXOpp) + (YOpp - tempYOpp) + (ZOpp - tempZOpp))) / 6;
+                                        HRadRatio = -(Math.Abs((ProbeHeight.X - tempX) + (ProbeHeight.Y - tempY) + (ProbeHeight.Z - tempZ) + (ProbeHeight.XOpp - tempXOpp) + (ProbeHeight.YOpp - tempYOpp) + (ProbeHeight.ZOpp - tempZOpp))) / 6;
 
                                         if (_serialPort.IsOpen)
                                         {
@@ -816,12 +805,12 @@ namespace deltaKinematics
                                     else if (advancedCalCount == 3)
                                     {//get X offset percentages
 
-                                        offsetXCorrection = Math.Abs(1 / (X - tempX));
-                                        xxOppPerc = Math.Abs((XOpp - tempXOpp) / (X - tempX));
-                                        xyPerc = Math.Abs((Y - tempY) / (X - tempX));
-                                        xyOppPerc = Math.Abs((YOpp - tempYOpp) / (X - tempX));
-                                        xzPerc = Math.Abs((Z - tempZ) / (X - tempX));
-                                        xzOppPerc = Math.Abs((ZOpp - tempZOpp) / (X - tempX));
+                                        offsetXCorrection = Math.Abs(1 / (ProbeHeight.X - tempX));
+                                        xxOppPerc = Math.Abs((ProbeHeight.XOpp - tempXOpp) / (ProbeHeight.X - tempX));
+                                        xyPerc = Math.Abs((ProbeHeight.Y - tempY) / (ProbeHeight.X - tempX));
+                                        xyOppPerc = Math.Abs((ProbeHeight.YOpp - tempYOpp) / (ProbeHeight.X - tempX));
+                                        xzPerc = Math.Abs((ProbeHeight.Z - tempZ) / (ProbeHeight.X - tempX));
+                                        xzOppPerc = Math.Abs((ProbeHeight.ZOpp - tempZOpp) / (ProbeHeight.X - tempX));
 
                                         if (_serialPort.IsOpen)
                                         {
@@ -843,12 +832,12 @@ namespace deltaKinematics
                                     else if (advancedCalCount == 4)
                                     {//get Y offset percentages
 
-                                        offsetYCorrection = Math.Abs(1 / (Y - tempY));
-                                        yyOppPerc = Math.Abs((YOpp - tempYOpp) / (Y - tempY));
-                                        yxPerc = Math.Abs((X - tempX) / (Y - tempY));
-                                        yxOppPerc = Math.Abs((XOpp - tempXOpp) / (Y - tempY));
-                                        yzPerc = Math.Abs((Z - tempZ) / (Y - tempY));
-                                        yzOppPerc = Math.Abs((ZOpp - tempZOpp) / (Y - tempY));
+                                        offsetYCorrection = Math.Abs(1 / (ProbeHeight.Y - tempY));
+                                        yyOppPerc = Math.Abs((ProbeHeight.YOpp - tempYOpp) / (ProbeHeight.Y - tempY));
+                                        yxPerc = Math.Abs((ProbeHeight.X - tempX) / (ProbeHeight.Y - tempY));
+                                        yxOppPerc = Math.Abs((ProbeHeight.XOpp - tempXOpp) / (ProbeHeight.Y - tempY));
+                                        yzPerc = Math.Abs((ProbeHeight.Z - tempZ) / (ProbeHeight.Y - tempY));
+                                        yzOppPerc = Math.Abs((ProbeHeight.ZOpp - tempZOpp) / (ProbeHeight.Y - tempY));
 
                                         if (_serialPort.IsOpen)
                                         {
@@ -870,12 +859,12 @@ namespace deltaKinematics
                                     else if (advancedCalCount == 5)
                                     {//get Z offset percentages
 
-                                        offsetZCorrection = Math.Abs(1 / (Z - tempZ));
-                                        zzOppPerc = Math.Abs((ZOpp - tempZOpp) / (Z - tempZ));
-                                        zxPerc = Math.Abs((X - tempX) / (Z - tempZ));
-                                        zxOppPerc = Math.Abs((XOpp - tempXOpp) / (Z - tempZ));
-                                        zyPerc = Math.Abs((Y - tempY) / (Z - tempZ));
-                                        zyOppPerc = Math.Abs((YOpp - tempYOpp) / (Z - tempZ));
+                                        offsetZCorrection = Math.Abs(1 / (ProbeHeight.Z - tempZ));
+                                        zzOppPerc = Math.Abs((ProbeHeight.ZOpp - tempZOpp) / (ProbeHeight.Z - tempZ));
+                                        zxPerc = Math.Abs((ProbeHeight.X - tempX) / (ProbeHeight.Z - tempZ));
+                                        zxOppPerc = Math.Abs((ProbeHeight.XOpp - tempXOpp) / (ProbeHeight.Z - tempZ));
+                                        zyPerc = Math.Abs((ProbeHeight.Y - tempY) / (ProbeHeight.Z - tempZ));
+                                        zyOppPerc = Math.Abs((ProbeHeight.YOpp - tempYOpp) / (ProbeHeight.Z - tempZ));
 
                                         if (_serialPort.IsOpen)
                                         {
@@ -898,7 +887,7 @@ namespace deltaKinematics
                                     else if (advancedCalCount == 6)//6
                                     {//get A alpha rotation
 
-                                        alphaRotationPercentageX = (2 / Math.Abs((YOpp - ZOpp) - (tempYOpp - tempZOpp)));
+                                        alphaRotationPercentageX = (2 / Math.Abs((ProbeHeight.YOpp - ProbeHeight.ZOpp) - (tempYOpp - tempZOpp)));
 
                                         if (_serialPort.IsOpen)
                                         {
@@ -920,7 +909,7 @@ namespace deltaKinematics
                                     else if (advancedCalCount == 7)//7
                                     {//get B alpha rotation
 
-                                        alphaRotationPercentageY = (2 / Math.Abs((ZOpp - XOpp) - (tempZOpp - tempXOpp)));
+                                        alphaRotationPercentageY = (2 / Math.Abs((ProbeHeight.ZOpp - ProbeHeight.XOpp) - (tempZOpp - tempXOpp)));
 
                                         if (_serialPort.IsOpen)
                                         {
@@ -942,7 +931,7 @@ namespace deltaKinematics
                                     else if (advancedCalCount == 8)//8
                                     {//get C alpha rotation
 
-                                        alphaRotationPercentageZ = (2 / Math.Abs((XOpp - YOpp) - (tempXOpp - tempYOpp)));
+                                        alphaRotationPercentageZ = (2 / Math.Abs((ProbeHeight.XOpp - ProbeHeight.YOpp) - (tempXOpp - tempYOpp)));
 
                                         if (_serialPort.IsOpen)
                                         {
@@ -963,11 +952,11 @@ namespace deltaKinematics
                                         setAdvancedCalVars();
                                     }
 
-                                    iterationNum++;
+                                    Iterations.iterationNum++;
                                 }
                                 else
                                 {
-                                    iterationNum++;
+                                    Iterations.iterationNum++;
 
                                     calibratePrinter();
                                 }
@@ -1151,7 +1140,7 @@ namespace deltaKinematics
 
             //set zprobe height to zero
 
-            if (comboBoxZMinimumValue == "Z-Probe" && iterationNum == 0)
+            if (comboBoxZMinimumValue == "Z-Probe" && Iterations.iterationNum == 0)
             {
                 zProbeSet = 1;
                 Thread.Sleep(pauseTimeSet);
@@ -1175,7 +1164,7 @@ namespace deltaKinematics
         private void calibratePrinter()
         {
             //check accuracy of current height-map and determine to end or procede
-            if (X <= accuracy2 && X >= -accuracy2 && XOpp <= accuracy2 && XOpp >= -accuracy2 && Y <= accuracy2 && Y >= -accuracy2 && YOpp <= accuracy2 && YOpp >= -accuracy2 && Z <= accuracy2 && Z >= -accuracy2 && ZOpp <= accuracy2 && ZOpp >= -accuracy2)
+            if (ProbeHeight.X <= accuracy2 && ProbeHeight.X >= -accuracy2 && ProbeHeight.XOpp <= accuracy2 && ProbeHeight.XOpp >= -accuracy2 && ProbeHeight.Y <= accuracy2 && ProbeHeight.Y >= -accuracy2 && ProbeHeight.YOpp <= accuracy2 && ProbeHeight.YOpp >= -accuracy2 && ProbeHeight.Z <= accuracy2 && ProbeHeight.Z >= -accuracy2 && ProbeHeight.ZOpp <= accuracy2 && ProbeHeight.ZOpp >= -accuracy2)
             {
                 //fsr plate offset
                 if (comboBoxZMinimumValue == "FSR")
@@ -1190,7 +1179,7 @@ namespace deltaKinematics
                 LogConsole("Calibration Complete\n");
                 //end code
             }
-            else if (iterationNum > maxIterations)
+            else if (Iterations.iterationNum > Iterations.maxIterations)
             {
                 //max iterations hit
                 LogConsole("Calibration Failed\n");
@@ -1199,63 +1188,63 @@ namespace deltaKinematics
             else
             {
                 //logs current iteration number
-                LogConsole("Current iteration: " + iterationNum + "\n");
+                LogConsole("Current iteration: " + Iterations.iterationNum + "\n");
 
                 //basic calibration
                 if (calibrationState == 0)
                 {
                     //////////////////////////////////////////////////////////////////////////////
                     //HRad is calibrated by increasing the outside edge of the glass by the average differences, this should balance the values with a central point of around zero
-                    double HRadSA = ((X + XOpp + Y + YOpp + Z + ZOpp) / 6);
+                    double HRadSA = ((ProbeHeight.X + ProbeHeight.XOpp + ProbeHeight.Y + ProbeHeight.YOpp + ProbeHeight.Z + ProbeHeight.ZOpp) / 6);
 
                     HRad = HRad + (HRadSA / HRadRatio);
 
-                    X = X - HRadSA;
-                    Y = Y - HRadSA;
-                    Z = Z - HRadSA;
-                    XOpp = XOpp - HRadSA;
-                    YOpp = YOpp - HRadSA;
-                    ZOpp = ZOpp - HRadSA;
+                    ProbeHeight.X = ProbeHeight.X - HRadSA;
+                    ProbeHeight.Y = ProbeHeight.Y - HRadSA;
+                    ProbeHeight.Z = ProbeHeight.Z - HRadSA;
+                    ProbeHeight.XOpp = ProbeHeight.XOpp - HRadSA;
+                    ProbeHeight.YOpp = ProbeHeight.YOpp - HRadSA;
+                    ProbeHeight.ZOpp = ProbeHeight.ZOpp - HRadSA;
 
-                    X = checkZero(X);
-                    Y = checkZero(Y);
-                    Z = checkZero(Z);
-                    XOpp = checkZero(XOpp);
-                    YOpp = checkZero(YOpp);
-                    ZOpp = checkZero(ZOpp);
+                    ProbeHeight.X = checkZero(ProbeHeight.X);
+                    ProbeHeight.Y = checkZero(ProbeHeight.Y);
+                    ProbeHeight.Z = checkZero(ProbeHeight.Z);
+                    ProbeHeight.XOpp = checkZero(ProbeHeight.XOpp);
+                    ProbeHeight.YOpp = checkZero(ProbeHeight.YOpp);
+                    ProbeHeight.ZOpp = checkZero(ProbeHeight.ZOpp);
 
                     LogConsole("HRad:" + HRad + "\n");
 
                     ////////////////////////////////////////////////////////////////////////////////
                     //Delta Radius Calibration******************************************************
-                    DASA = ((X + XOpp) / 2);
-                    DBSA = ((Y + YOpp) / 2);
-                    DCSA = ((Z + ZOpp) / 2);
+                    DASA = ((ProbeHeight.X + ProbeHeight.XOpp) / 2);
+                    DBSA = ((ProbeHeight.Y + ProbeHeight.YOpp) / 2);
+                    DCSA = ((ProbeHeight.Z + ProbeHeight.ZOpp) / 2);
 
                     DA = DA + ((DASA) / HRadRatio);
                     DB = DB + ((DBSA) / HRadRatio);
                     DC = DC + ((DCSA) / HRadRatio);
 
-                    X = X + ((DASA) / HRadRatio) * 0.5;
-                    XOpp = XOpp + ((DASA) / HRadRatio) * 0.225;
-                    Y = Y + ((DASA) / HRadRatio) * 0.1375;
-                    YOpp = YOpp + ((DASA) / HRadRatio) * 0.1375;
-                    Z = Z + ((DASA) / HRadRatio) * 0.1375;
-                    ZOpp = ZOpp + ((DASA) / HRadRatio) * 0.1375;
+                    ProbeHeight.X = ProbeHeight.X + ((DASA) / HRadRatio) * 0.5;
+                    ProbeHeight.XOpp = ProbeHeight.XOpp + ((DASA) / HRadRatio) * 0.225;
+                    ProbeHeight.Y = ProbeHeight.Y + ((DASA) / HRadRatio) * 0.1375;
+                    ProbeHeight.YOpp = ProbeHeight.YOpp + ((DASA) / HRadRatio) * 0.1375;
+                    ProbeHeight.Z = ProbeHeight.Z + ((DASA) / HRadRatio) * 0.1375;
+                    ProbeHeight.ZOpp = ProbeHeight.ZOpp + ((DASA) / HRadRatio) * 0.1375;
 
-                    X = X + ((DBSA) / HRadRatio) * 0.1375;
-                    XOpp = XOpp + ((DBSA) / HRadRatio) * 0.1375;
-                    Y = Y + ((DBSA) / HRadRatio) * 0.5;
-                    YOpp = YOpp + ((DBSA) / HRadRatio) * 0.225;
-                    Z = Z + ((DBSA) / HRadRatio) * 0.1375;
-                    ZOpp = ZOpp + ((DBSA) / HRadRatio) * 0.1375;
+                    ProbeHeight.X = ProbeHeight.X + ((DBSA) / HRadRatio) * 0.1375;
+                    ProbeHeight.XOpp = ProbeHeight.XOpp + ((DBSA) / HRadRatio) * 0.1375;
+                    ProbeHeight.Y = ProbeHeight.Y + ((DBSA) / HRadRatio) * 0.5;
+                    ProbeHeight.YOpp = ProbeHeight.YOpp + ((DBSA) / HRadRatio) * 0.225;
+                    ProbeHeight.Z = ProbeHeight.Z + ((DBSA) / HRadRatio) * 0.1375;
+                    ProbeHeight.ZOpp = ProbeHeight.ZOpp + ((DBSA) / HRadRatio) * 0.1375;
 
-                    X = X + ((DCSA) / HRadRatio) * 0.1375;
-                    XOpp = XOpp + ((DCSA) / HRadRatio) * 0.1375;
-                    Y = Y + ((DCSA) / HRadRatio) * 0.1375;
-                    YOpp = YOpp + ((DCSA) / HRadRatio) * 0.1375;
-                    Z = Z + ((DCSA) / HRadRatio) * 0.5;
-                    ZOpp = ZOpp + ((DCSA) / HRadRatio) * 0.225;
+                    ProbeHeight.X = ProbeHeight.X + ((DCSA) / HRadRatio) * 0.1375;
+                    ProbeHeight.XOpp = ProbeHeight.XOpp + ((DCSA) / HRadRatio) * 0.1375;
+                    ProbeHeight.Y = ProbeHeight.Y + ((DCSA) / HRadRatio) * 0.1375;
+                    ProbeHeight.YOpp = ProbeHeight.YOpp + ((DCSA) / HRadRatio) * 0.1375;
+                    ProbeHeight.Z = ProbeHeight.Z + ((DCSA) / HRadRatio) * 0.5;
+                    ProbeHeight.ZOpp = ProbeHeight.ZOpp + ((DCSA) / HRadRatio) * 0.225;
 
                     LogConsole("Delta Radii Offsets: " + DA.ToString() + ", " + DB.ToString() + ", " + DC.ToString());
                     
@@ -1278,12 +1267,12 @@ namespace deltaKinematics
                     ////////////////////////////////////////////////////////////////////////////////
                     //Tower Offset Calibration******************************************************
                     int j = 0;
-                    tempX2 = X;
-                    tempXOpp2 = XOpp;
-                    tempY2 = Y;
-                    tempYOpp2 = YOpp;
-                    tempZ2 = Z;
-                    tempZOpp2 = ZOpp;
+                    tempX2 = ProbeHeight.X;
+                    tempXOpp2 = ProbeHeight.XOpp;
+                    tempY2 = ProbeHeight.Y;
+                    tempYOpp2 = ProbeHeight.YOpp;
+                    tempZ2 = ProbeHeight.Z;
+                    tempZOpp2 = ProbeHeight.ZOpp;
 
                     while (j < 100)
                     {
@@ -1442,12 +1431,12 @@ namespace deltaKinematics
                         else if (j == 50)
                         {
                             //error protection
-                            tempX2 = X;
-                            tempXOpp2 = XOpp;
-                            tempY2 = Y;
-                            tempYOpp2 = YOpp;
-                            tempZ2 = Z;
-                            tempZOpp2 = ZOpp;
+                            tempX2 = ProbeHeight.X;
+                            tempXOpp2 = ProbeHeight.XOpp;
+                            tempY2 = ProbeHeight.Y;
+                            tempYOpp2 = ProbeHeight.YOpp;
+                            tempZ2 = ProbeHeight.Z;
+                            tempZOpp2 = ProbeHeight.ZOpp;
 
                             //X
                             offsetXCorrection = 1.5;
@@ -1495,12 +1484,12 @@ namespace deltaKinematics
                     }
                     else
                     {
-                        X = tempX2;
-                        XOpp = tempXOpp2;
-                        Y = tempY2;
-                        YOpp = tempYOpp2;
-                        Z = tempZ2;
-                        ZOpp = tempZOpp2;
+                        ProbeHeight.X = tempX2;
+                        ProbeHeight.XOpp = tempXOpp2;
+                        ProbeHeight.Y = tempY2;
+                        ProbeHeight.YOpp = tempYOpp2;
+                        ProbeHeight.Z = tempZ2;
+                        ProbeHeight.ZOpp = tempZOpp2;
                     }
 
                     //round to the nearest whole number
@@ -1527,58 +1516,58 @@ namespace deltaKinematics
                         while (k < 100)
                         {
                             //X Alpha Rotation
-                            if (YOpp > ZOpp)
+                            if (ProbeHeight.YOpp > ProbeHeight.ZOpp)
                             {
-                                double ZYOppAvg = (YOpp - ZOpp) / 2;
+                                double ZYOppAvg = (ProbeHeight.YOpp - ProbeHeight.ZOpp) / 2;
                                 A = A + (ZYOppAvg * alphaRotationPercentageX); // (0.5/((diff y0 and z0 at X + 0.5)-(diff y0 and z0 at X = 0))) * 2 = 1.75
-                                YOpp = YOpp - ZYOppAvg;
-                                ZOpp = ZOpp + ZYOppAvg;
+                                ProbeHeight.YOpp = ProbeHeight.YOpp - ZYOppAvg;
+                                ProbeHeight.ZOpp = ProbeHeight.ZOpp + ZYOppAvg;
                             }
-                            else if (YOpp < ZOpp)
+                            else if (ProbeHeight.YOpp < ProbeHeight.ZOpp)
                             {
-                                double ZYOppAvg = (ZOpp - YOpp) / 2;
+                                double ZYOppAvg = (ProbeHeight.ZOpp - ProbeHeight.YOpp) / 2;
 
                                 A = A - (ZYOppAvg * alphaRotationPercentageX);
-                                YOpp = YOpp + ZYOppAvg;
-                                ZOpp = ZOpp - ZYOppAvg;
+                                ProbeHeight.YOpp = ProbeHeight.YOpp + ZYOppAvg;
+                                ProbeHeight.ZOpp = ProbeHeight.ZOpp - ZYOppAvg;
                             }
 
                             //Y Alpha Rotation
-                            if (ZOpp > XOpp)
+                            if (ProbeHeight.ZOpp > ProbeHeight.XOpp)
                             {
-                                double XZOppAvg = (ZOpp - XOpp) / 2;
+                                double XZOppAvg = (ProbeHeight.ZOpp - ProbeHeight.XOpp) / 2;
                                 B = B + (XZOppAvg * alphaRotationPercentageY);
-                                ZOpp = ZOpp - XZOppAvg;
-                                XOpp = XOpp + XZOppAvg;
+                                ProbeHeight.ZOpp = ProbeHeight.ZOpp - XZOppAvg;
+                                ProbeHeight.XOpp = ProbeHeight.XOpp + XZOppAvg;
                             }
-                            else if (ZOpp < XOpp)
+                            else if (ProbeHeight.ZOpp < ProbeHeight.XOpp)
                             {
-                                double XZOppAvg = (XOpp - ZOpp) / 2;
+                                double XZOppAvg = (ProbeHeight.XOpp - ProbeHeight.ZOpp) / 2;
 
                                 B = B - (XZOppAvg * alphaRotationPercentageY);
-                                ZOpp = ZOpp + XZOppAvg;
-                                XOpp = XOpp - XZOppAvg;
+                                ProbeHeight.ZOpp = ProbeHeight.ZOpp + XZOppAvg;
+                                ProbeHeight.XOpp = ProbeHeight.XOpp - XZOppAvg;
                             }
                             //Z Alpha Rotation
-                            if (XOpp > YOpp)
+                            if (ProbeHeight.XOpp > ProbeHeight.YOpp)
                             {
-                                double YXOppAvg = (XOpp - YOpp) / 2;
+                                double YXOppAvg = (ProbeHeight.XOpp - ProbeHeight.YOpp) / 2;
                                 C = C + (YXOppAvg * alphaRotationPercentageZ);
-                                XOpp = XOpp - YXOppAvg;
-                                YOpp = YOpp + YXOppAvg;
+                                ProbeHeight.XOpp = ProbeHeight.XOpp - YXOppAvg;
+                                ProbeHeight.YOpp = ProbeHeight.YOpp + YXOppAvg;
                             }
-                            else if (XOpp < YOpp)
+                            else if (ProbeHeight.XOpp < ProbeHeight.YOpp)
                             {
-                                double YXOppAvg = (YOpp - XOpp) / 2;
+                                double YXOppAvg = (ProbeHeight.YOpp - ProbeHeight.XOpp) / 2;
 
                                 C = C - (YXOppAvg * alphaRotationPercentageZ);
-                                XOpp = XOpp + YXOppAvg;
-                                YOpp = YOpp - YXOppAvg;
+                                ProbeHeight.XOpp = ProbeHeight.XOpp + YXOppAvg;
+                                ProbeHeight.YOpp = ProbeHeight.YOpp - YXOppAvg;
                             }
 
                             //determine if value is close enough
-                            double hTow = Math.Max(Math.Max(XOpp, YOpp), ZOpp);
-                            double lTow = Math.Min(Math.Min(XOpp, YOpp), ZOpp);
+                            double hTow = Math.Max(Math.Max(ProbeHeight.XOpp, ProbeHeight.YOpp), ProbeHeight.ZOpp);
+                            double lTow = Math.Min(Math.Min(ProbeHeight.XOpp, ProbeHeight.YOpp), ProbeHeight.ZOpp);
                             double towDiff = hTow - lTow;
 
                             if (towDiff < accuracy && towDiff > -accuracy)
@@ -1605,46 +1594,46 @@ namespace deltaKinematics
                         int i = 0;
                         while (i < 100)
                         {
-                            double XYZOpp = (XOpp + YOpp + ZOpp) / 3;
+                            double XYZOpp = (ProbeHeight.XOpp + ProbeHeight.YOpp + ProbeHeight.ZOpp) / 3;
                             diagonalRod = diagonalRod + (XYZOpp * diagChange);
-                            X = X - towOppDiff * XYZOpp;
-                            Y = Y - towOppDiff * XYZOpp;
-                            Z = Z - towOppDiff * XYZOpp;
-                            XOpp = XOpp - XYZOpp;
-                            YOpp = YOpp - XYZOpp;
-                            ZOpp = ZOpp - XYZOpp;
-                            XYZOpp = (XOpp + YOpp + ZOpp) / 3;
+                            ProbeHeight.X = ProbeHeight.X - towOppDiff * XYZOpp;
+                            ProbeHeight.Y = ProbeHeight.Y - towOppDiff * XYZOpp;
+                            ProbeHeight.Z = ProbeHeight.Z - towOppDiff * XYZOpp;
+                            ProbeHeight.XOpp = ProbeHeight.XOpp - XYZOpp;
+                            ProbeHeight.YOpp = ProbeHeight.YOpp - XYZOpp;
+                            ProbeHeight.ZOpp = ProbeHeight.ZOpp - XYZOpp;
+                            XYZOpp = (ProbeHeight.XOpp + ProbeHeight.YOpp + ProbeHeight.ZOpp) / 3;
                             XYZOpp = checkZero(XYZOpp);
 
-                            double XYZ = (X + Y + Z) / 3;
+                            double XYZ = (ProbeHeight.X + ProbeHeight.Y + ProbeHeight.Z) / 3;
                             //hrad
                             HRad = HRad + (XYZ / HRadRatio);
 
                             if (XYZOpp >= 0)
                             {
-                                X = X - XYZ;
-                                Y = Y - XYZ;
-                                Z = Z - XYZ;
-                                XOpp = XOpp - XYZ;
-                                YOpp = YOpp - XYZ;
-                                ZOpp = ZOpp - XYZ;
+                                ProbeHeight.X = ProbeHeight.X - XYZ;
+                                ProbeHeight.Y = ProbeHeight.Y - XYZ;
+                                ProbeHeight.Z = ProbeHeight.Z - XYZ;
+                                ProbeHeight.XOpp = ProbeHeight.XOpp - XYZ;
+                                ProbeHeight.YOpp = ProbeHeight.YOpp - XYZ;
+                                ProbeHeight.ZOpp = ProbeHeight.ZOpp - XYZ;
                             }
                             else
                             {
-                                X = X + XYZ;
-                                Y = Y + XYZ;
-                                Z = Z + XYZ;
-                                XOpp = XOpp + XYZ;
-                                YOpp = YOpp + XYZ;
-                                ZOpp = ZOpp + XYZ;
+                                ProbeHeight.X = ProbeHeight.X + XYZ;
+                                ProbeHeight.Y = ProbeHeight.Y + XYZ;
+                                ProbeHeight.Z = ProbeHeight.Z + XYZ;
+                                ProbeHeight.XOpp = ProbeHeight.XOpp + XYZ;
+                                ProbeHeight.YOpp = ProbeHeight.YOpp + XYZ;
+                                ProbeHeight.ZOpp = ProbeHeight.ZOpp + XYZ;
                             }
 
-                            X = checkZero(X);
-                            Y = checkZero(Y);
-                            Z = checkZero(Z);
-                            XOpp = checkZero(XOpp);
-                            YOpp = checkZero(YOpp);
-                            ZOpp = checkZero(ZOpp);
+                            ProbeHeight.X = checkZero(ProbeHeight.X);
+                            ProbeHeight.Y = checkZero(ProbeHeight.Y);
+                            ProbeHeight.Z = checkZero(ProbeHeight.Z);
+                            ProbeHeight.XOpp = checkZero(ProbeHeight.XOpp);
+                            ProbeHeight.YOpp = checkZero(ProbeHeight.YOpp);
+                            ProbeHeight.ZOpp = checkZero(ProbeHeight.ZOpp);
 
                             //XYZ is zero
                             if (XYZOpp < accuracy && XYZOpp > -accuracy && XYZ < accuracy && XYZ > -accuracy)
@@ -1710,20 +1699,20 @@ namespace deltaKinematics
                         //HRad is calibrated by increasing the outside edge of the glass by the average differences, this should balance the values with an average of zero
                         if (calculationCheckCount == 0)
                         {
-                            calculationX = X;
-                            calculationXOpp = XOpp;
-                            calculationY = Y;
-                            calculationYOpp = YOpp;
-                            calculationZ = Z;
-                            calculationZOpp = ZOpp;
+                            calculationX = ProbeHeight.X;
+                            calculationXOpp = ProbeHeight.XOpp;
+                            calculationY = ProbeHeight.Y;
+                            calculationYOpp = ProbeHeight.YOpp;
+                            calculationZ = ProbeHeight.Z;
+                            calculationZOpp = ProbeHeight.ZOpp;
 
-                            calculationTemp1 = ((X + XOpp + Y + YOpp + Z + ZOpp) / 6);
-                            HRadSA = ((X + XOpp + Y + YOpp + Z + ZOpp) / 6);
+                            calculationTemp1 = ((ProbeHeight.X + ProbeHeight.XOpp + ProbeHeight.Y + ProbeHeight.YOpp + ProbeHeight.Z + ProbeHeight.ZOpp) / 6);
+                            HRadSA = ((ProbeHeight.X + ProbeHeight.XOpp + ProbeHeight.Y + ProbeHeight.YOpp + ProbeHeight.Z + ProbeHeight.ZOpp) / 6);
                             calculationCheckCount++;
                         }
                         else
                         {
-                            HRadSA = ((X + XOpp + Y + YOpp + Z + ZOpp) / 6);
+                            HRadSA = ((ProbeHeight.X + ProbeHeight.XOpp + ProbeHeight.Y + ProbeHeight.YOpp + ProbeHeight.Z + ProbeHeight.ZOpp) / 6);
 
                             if (HRadCorrection != 0)
                             {
@@ -1762,21 +1751,21 @@ namespace deltaKinematics
                             LogConsole("HRad Average before calibration:" + calculationTemp1 + "\n");
 
                             //remembers previous offset
-                            calculationTemp1 = ((X + XOpp + Y + YOpp + Z + ZOpp) / 6);
+                            calculationTemp1 = ((ProbeHeight.X + ProbeHeight.XOpp + ProbeHeight.Y + ProbeHeight.YOpp + ProbeHeight.Z + ProbeHeight.ZOpp) / 6);
 
-                            X = X - HRadSA;
-                            Y = Y - HRadSA;
-                            Z = Z - HRadSA;
-                            XOpp = XOpp - HRadSA;
-                            YOpp = YOpp - HRadSA;
-                            ZOpp = ZOpp - HRadSA;
+                            ProbeHeight.X = ProbeHeight.X - HRadSA;
+                            ProbeHeight.Y = ProbeHeight.Y - HRadSA;
+                            ProbeHeight.Z = ProbeHeight.Z - HRadSA;
+                            ProbeHeight.XOpp = ProbeHeight.XOpp - HRadSA;
+                            ProbeHeight.YOpp = ProbeHeight.YOpp - HRadSA;
+                            ProbeHeight.ZOpp = ProbeHeight.ZOpp - HRadSA;
 
-                            X = checkZero(X);
-                            Y = checkZero(Y);
-                            Z = checkZero(Z);
-                            XOpp = checkZero(XOpp);
-                            YOpp = checkZero(YOpp);
-                            ZOpp = checkZero(ZOpp);
+                            ProbeHeight.X = checkZero(ProbeHeight.X);
+                            ProbeHeight.Y = checkZero(ProbeHeight.Y);
+                            ProbeHeight.Z = checkZero(ProbeHeight.Z);
+                            ProbeHeight.XOpp = checkZero(ProbeHeight.XOpp);
+                            ProbeHeight.YOpp = checkZero(ProbeHeight.YOpp);
+                            ProbeHeight.ZOpp = checkZero(ProbeHeight.ZOpp);
 
                             LogConsole("HRad:" + HRad + "\n");
                             LogConsole("HRad Correction:" + HRadCorrection + "\n");
@@ -1794,9 +1783,9 @@ namespace deltaKinematics
                     {
                         ////////////////////////////////////////////////////////////////////////////////
                         //Delta Radius Calibration******************************************************
-                        double DASA = ((X + XOpp) / 2);
-                        double DBSA = ((Y + YOpp) / 2);
-                        double DCSA = ((Z + ZOpp) / 2);
+                        double DASA = ((ProbeHeight.X + ProbeHeight.XOpp) / 2);
+                        double DBSA = ((ProbeHeight.Y + ProbeHeight.YOpp) / 2);
+                        double DCSA = ((ProbeHeight.Z + ProbeHeight.ZOpp) / 2);
 
 
                         if (DASA < accuracy2 && DASA > -accuracy2 && DBSA < accuracy2 && DBSA > -accuracy2 && DCSA < accuracy2 && DCSA > -accuracy2)
@@ -1836,11 +1825,11 @@ namespace deltaKinematics
 
                         ////////////////////////////////////////////////////////////////////////////////
                         //Tower Offset Calibration******************************************************
-                        double hTow2 = Math.Max(Math.Max(X, Y), Z);
-                        double lTow2 = Math.Min(Math.Min(X, Y), Z);
+                        double hTow2 = Math.Max(Math.Max(ProbeHeight.X, ProbeHeight.Y), ProbeHeight.Z);
+                        double lTow2 = Math.Min(Math.Min(ProbeHeight.X, ProbeHeight.Y), ProbeHeight.Z);
                         double towDiff2 = hTow2 - lTow2;
 
-                        XYZAvg = (X + Y + Z) / 3;
+                        XYZAvg = (ProbeHeight.X + ProbeHeight.Y + ProbeHeight.Z) / 3;
 
                         if (towDiff2 < 0.1 && towDiff2 > -0.1)
                         {
@@ -1858,7 +1847,7 @@ namespace deltaKinematics
                             //balance axes - retrieve data
                             if (calculationCheckCount == 0)
                             {
-                                calculationXYZAvg = (X + Y + Z) / 3;
+                                calculationXYZAvg = (ProbeHeight.X + ProbeHeight.Y + ProbeHeight.Z) / 3;
                                 offsetXYZ = 1 / 0.7;
 
                                 LogConsole("XYZ Offset Correction: " + calculationTemp1);
@@ -1877,56 +1866,56 @@ namespace deltaKinematics
                                 LogConsole("XYZ Offset Average Afer Calibration: " + XYZAvg);
                             }
 
-                            double theoryX = offsetX + X * stepsPerMM * offsetXCorrection;
-                            double theoryY = offsetY + Y * stepsPerMM * offsetYCorrection;
-                            double theoryZ = offsetZ + Z * stepsPerMM * offsetZCorrection;
+                            double theoryX = offsetX + ProbeHeight.X * stepsPerMM * offsetXCorrection;
+                            double theoryY = offsetY + ProbeHeight.Y * stepsPerMM * offsetYCorrection;
+                            double theoryZ = offsetZ + ProbeHeight.Z * stepsPerMM * offsetZCorrection;
 
                             //correction of one tower allows for XY dimensional accuracy
-                            if (X > 0)
+                            if (ProbeHeight.X > 0)
                             {
                                 //if x is positive
-                                offsetX = offsetX + X * stepsPerMM * offsetXCorrection;
+                                offsetX = offsetX + ProbeHeight.X * stepsPerMM * offsetXCorrection;
                             }
-                            else if (theoryX > 0 && X < 0)
+                            else if (theoryX > 0 && ProbeHeight.X < 0)
                             {
                                 //if x is negative and can be decreased
-                                offsetX = offsetX + X * stepsPerMM * offsetXCorrection;
+                                offsetX = offsetX + ProbeHeight.X * stepsPerMM * offsetXCorrection;
                             }
                             else
                             {
                                 //if X is negative
-                                offsetY = offsetY - X * stepsPerMM * offsetYCorrection * 2;
-                                offsetZ = offsetZ - X * stepsPerMM * offsetZCorrection * 2;
+                                offsetY = offsetY - ProbeHeight.X * stepsPerMM * offsetYCorrection * 2;
+                                offsetZ = offsetZ - ProbeHeight.X * stepsPerMM * offsetZCorrection * 2;
                             }
 
                             //Y
-                            if (Y > 0)
+                            if (ProbeHeight.Y > 0)
                             {
-                                offsetY = offsetY + Y * stepsPerMM * offsetYCorrection;
+                                offsetY = offsetY + ProbeHeight.Y * stepsPerMM * offsetYCorrection;
                             }
-                            else if (theoryY > 0 && Y < 0)
+                            else if (theoryY > 0 && ProbeHeight.Y < 0)
                             {
-                                offsetY = offsetY + Y * stepsPerMM * offsetYCorrection;
+                                offsetY = offsetY + ProbeHeight.Y * stepsPerMM * offsetYCorrection;
                             }
                             else
                             {
-                                offsetX = offsetX - Y * stepsPerMM * offsetXCorrection * 2;
-                                offsetZ = offsetZ - Y * stepsPerMM * offsetZCorrection * 2;
+                                offsetX = offsetX - ProbeHeight.Y * stepsPerMM * offsetXCorrection * 2;
+                                offsetZ = offsetZ - ProbeHeight.Y * stepsPerMM * offsetZCorrection * 2;
                             }
 
                             //Z
-                            if (Z > 0)
+                            if (ProbeHeight.Z > 0)
                             {
-                                offsetZ = offsetZ + Z * stepsPerMM * offsetZCorrection;
+                                offsetZ = offsetZ + ProbeHeight.Z * stepsPerMM * offsetZCorrection;
                             }
-                            else if (theoryZ > 0 && Z < 0)
+                            else if (theoryZ > 0 && ProbeHeight.Z < 0)
                             {
-                                offsetZ = offsetZ + Z * stepsPerMM * offsetZCorrection;
+                                offsetZ = offsetZ + ProbeHeight.Z * stepsPerMM * offsetZCorrection;
                             }
                             else
                             {
-                                offsetY = offsetY - Z * stepsPerMM * offsetYCorrection * 2;
-                                offsetX = offsetX - Z * stepsPerMM * offsetXCorrection * 2;
+                                offsetY = offsetY - ProbeHeight.Z * stepsPerMM * offsetYCorrection * 2;
+                                offsetX = offsetX - ProbeHeight.Z * stepsPerMM * offsetXCorrection * 2;
                             }
                             
                             //send data back to printer
@@ -1952,8 +1941,8 @@ namespace deltaKinematics
                     {
                         ////////////////////////////////////////////////////////////////////////////////
                         //Alpha Rotation Calibration****************************************************
-                        double hTow1 = Math.Max(Math.Max(XOpp, YOpp), ZOpp);
-                        double lTow1 = Math.Min(Math.Min(XOpp, YOpp), ZOpp);
+                        double hTow1 = Math.Max(Math.Max(ProbeHeight.XOpp, ProbeHeight.YOpp), ProbeHeight.ZOpp);
+                        double lTow1 = Math.Min(Math.Min(ProbeHeight.XOpp, ProbeHeight.YOpp), ProbeHeight.ZOpp);
                         double towDiff1 = hTow1 - lTow1;
 
                         if (towDiff1 < accuracy2 && towDiff1 > -accuracy2)
@@ -1970,59 +1959,59 @@ namespace deltaKinematics
                             while (k < 100)
                             {
                                 //X Alpha Rotation
-                                if (YOpp > ZOpp)
+                                if (ProbeHeight.YOpp > ProbeHeight.ZOpp)
                                 {
-                                    double ZYOppAvg = (YOpp - ZOpp) / 2;
+                                    double ZYOppAvg = (ProbeHeight.YOpp - ProbeHeight.ZOpp) / 2;
                                     A = A + (ZYOppAvg * alphaRotationPercentageX);
-                                    YOpp = YOpp - ZYOppAvg;
-                                    ZOpp = ZOpp + ZYOppAvg;
+                                    ProbeHeight.YOpp = ProbeHeight.YOpp - ZYOppAvg;
+                                    ProbeHeight.ZOpp = ProbeHeight.ZOpp + ZYOppAvg;
                                 }
-                                else if (YOpp < ZOpp)
+                                else if (ProbeHeight.YOpp < ProbeHeight.ZOpp)
                                 {
-                                    double ZYOppAvg = (ZOpp - YOpp) / 2;
+                                    double ZYOppAvg = (ProbeHeight.ZOpp - ProbeHeight.YOpp) / 2;
 
                                     A = A - (ZYOppAvg * alphaRotationPercentageX);
-                                    YOpp = YOpp + ZYOppAvg;
-                                    ZOpp = ZOpp - ZYOppAvg;
+                                    ProbeHeight.YOpp = ProbeHeight.YOpp + ZYOppAvg;
+                                    ProbeHeight.ZOpp = ProbeHeight.ZOpp - ZYOppAvg;
                                 }
 
                                 //Y Alpha Rotation
-                                if (ZOpp > XOpp)
+                                if (ProbeHeight.ZOpp > ProbeHeight.XOpp)
                                 {
-                                    double XZOppAvg = (ZOpp - XOpp) / 2;
+                                    double XZOppAvg = (ProbeHeight.ZOpp - ProbeHeight.XOpp) / 2;
                                     B = B + (XZOppAvg * alphaRotationPercentageY);
-                                    ZOpp = ZOpp - XZOppAvg;
-                                    XOpp = XOpp + XZOppAvg;
+                                    ProbeHeight.ZOpp = ProbeHeight.ZOpp - XZOppAvg;
+                                    ProbeHeight.XOpp = ProbeHeight.XOpp + XZOppAvg;
                                 }
-                                else if (ZOpp < XOpp)
+                                else if (ProbeHeight.ZOpp < ProbeHeight.XOpp)
                                 {
-                                    double XZOppAvg = (XOpp - ZOpp) / 2;
+                                    double XZOppAvg = (ProbeHeight.XOpp - ProbeHeight.ZOpp) / 2;
 
                                     B = B - (XZOppAvg * alphaRotationPercentageY);
-                                    ZOpp = ZOpp + XZOppAvg;
-                                    XOpp = XOpp - XZOppAvg;
+                                    ProbeHeight.ZOpp = ProbeHeight.ZOpp + XZOppAvg;
+                                    ProbeHeight.XOpp = ProbeHeight.XOpp - XZOppAvg;
                                 }
 
                                 //Z Alpha Rotation
-                                if (XOpp > YOpp)
+                                if (ProbeHeight.XOpp > ProbeHeight.YOpp)
                                 {
-                                    double YXOppAvg = (XOpp - YOpp) / 2;
+                                    double YXOppAvg = (ProbeHeight.XOpp - ProbeHeight.YOpp) / 2;
                                     C = C + (YXOppAvg * alphaRotationPercentageZ);
-                                    XOpp = XOpp - YXOppAvg;
-                                    YOpp = YOpp + YXOppAvg;
+                                    ProbeHeight.XOpp = ProbeHeight.XOpp - YXOppAvg;
+                                    ProbeHeight.YOpp = ProbeHeight.YOpp + YXOppAvg;
                                 }
-                                else if (XOpp < YOpp)
+                                else if (ProbeHeight.XOpp < ProbeHeight.YOpp)
                                 {
-                                    double YXOppAvg = (YOpp - XOpp) / 2;
+                                    double YXOppAvg = (ProbeHeight.YOpp - ProbeHeight.XOpp) / 2;
 
                                     C = C - (YXOppAvg * alphaRotationPercentageZ);
-                                    XOpp = XOpp + YXOppAvg;
-                                    YOpp = YOpp - YXOppAvg;
+                                    ProbeHeight.XOpp = ProbeHeight.XOpp + YXOppAvg;
+                                    ProbeHeight.YOpp = ProbeHeight.YOpp - YXOppAvg;
                                 }
 
                                 //determine if value is close enough
-                                double hTow = Math.Max(Math.Max(XOpp, YOpp), ZOpp);
-                                double lTow = Math.Min(Math.Min(XOpp, YOpp), ZOpp);
+                                double hTow = Math.Max(Math.Max(ProbeHeight.XOpp, ProbeHeight.YOpp), ProbeHeight.ZOpp);
+                                double lTow = Math.Min(Math.Min(ProbeHeight.XOpp, ProbeHeight.YOpp), ProbeHeight.ZOpp);
                                 double towDiff = hTow - lTow;
 
                                 if (towDiff < accuracy && towDiff > -accuracy)
@@ -2036,7 +2025,7 @@ namespace deltaKinematics
                             }
 
                             LogConsole("ABC:" + A + " " + B + " " + C + "\n");
-                            LogConsole("Heights: X:" + X + ", XOpp:" + XOpp + ", Y:" + Y + ", YOpp:" + YOpp + ", Z:" + Z + ", and ZOpp:" + ZOpp + "\n");
+                            LogConsole("Heights: X:" + ProbeHeight.X + ", XOpp:" + ProbeHeight.XOpp + ", Y:" + ProbeHeight.Y + ", YOpp:" + ProbeHeight.YOpp + ", Z:" + ProbeHeight.Z + ", and ZOpp:" + ProbeHeight.ZOpp + "\n");
 
                             _serialPort.WriteLine("M206 T3 P901 X" + checkZero(A).ToString());
                             LogConsole("Setting A Rotation\n");
@@ -2056,8 +2045,8 @@ namespace deltaKinematics
                     {
                         ////////////////////////////////////////////////////////////////////////////////
                         //Diagonal Rod Calibration******************************************************
-                        double XYZ2 = (X + Y + Z) / 3;
-                        double XYZOpp2 = (XOpp + YOpp + ZOpp) / 3;
+                        double XYZ2 = (ProbeHeight.X + ProbeHeight.Y + ProbeHeight.Z) / 3;
+                        double XYZOpp2 = (ProbeHeight.XOpp + ProbeHeight.YOpp + ProbeHeight.ZOpp) / 3;
                         XYZ2 = checkZero(XYZ2);
                         XYZOpp2 = checkZero(XYZOpp2);
 
@@ -2080,46 +2069,46 @@ namespace deltaKinematics
                             int i = 0;
                             while (i < 100)
                             {
-                                double XYZOpp = (XOpp + YOpp + ZOpp) / 3;
+                                double XYZOpp = (ProbeHeight.XOpp + ProbeHeight.YOpp + ProbeHeight.ZOpp) / 3;
                                 diagonalRod = diagonalRod + (XYZOpp * diagChange);
-                                X = X - towOppDiff * XYZOpp;
-                                Y = Y - towOppDiff * XYZOpp;
-                                Z = Z - towOppDiff * XYZOpp;
-                                XOpp = XOpp - XYZOpp;
-                                YOpp = YOpp - XYZOpp;
-                                ZOpp = ZOpp - XYZOpp;
-                                XYZOpp = (XOpp + YOpp + ZOpp) / 3;
+                                ProbeHeight.X = ProbeHeight.X - towOppDiff * XYZOpp;
+                                ProbeHeight.Y = ProbeHeight.Y - towOppDiff * XYZOpp;
+                                ProbeHeight.Z = ProbeHeight.Z - towOppDiff * XYZOpp;
+                                ProbeHeight.XOpp = ProbeHeight.XOpp - XYZOpp;
+                                ProbeHeight.YOpp = ProbeHeight.YOpp - XYZOpp;
+                                ProbeHeight.ZOpp = ProbeHeight.ZOpp - XYZOpp;
+                                XYZOpp = (ProbeHeight.XOpp + ProbeHeight.YOpp + ProbeHeight.ZOpp) / 3;
                                 XYZOpp = checkZero(XYZOpp);
 
-                                double XYZ = (X + Y + Z) / 3;
+                                double XYZ = (ProbeHeight.X + ProbeHeight.Y + ProbeHeight.Z) / 3;
                                 //hrad
                                 HRad = HRad + (XYZ / HRadRatio);
 
                                 if (XYZOpp >= 0)
                                 {
-                                    X = X - XYZ;
-                                    Y = Y - XYZ;
-                                    Z = Z - XYZ;
-                                    XOpp = XOpp - XYZ;
-                                    YOpp = YOpp - XYZ;
-                                    ZOpp = ZOpp - XYZ;
+                                    ProbeHeight.X = ProbeHeight.X - XYZ;
+                                    ProbeHeight.Y = ProbeHeight.Y - XYZ;
+                                    ProbeHeight.Z = ProbeHeight.Z - XYZ;
+                                    ProbeHeight.XOpp = ProbeHeight.XOpp - XYZ;
+                                    ProbeHeight.YOpp = ProbeHeight.YOpp - XYZ;
+                                    ProbeHeight.ZOpp = ProbeHeight.ZOpp - XYZ;
                                 }
                                 else
                                 {
-                                    X = X + XYZ;
-                                    Y = Y + XYZ;
-                                    Z = Z + XYZ;
-                                    XOpp = XOpp + XYZ;
-                                    YOpp = YOpp + XYZ;
-                                    ZOpp = ZOpp + XYZ;
+                                    ProbeHeight.X = ProbeHeight.X + XYZ;
+                                    ProbeHeight.Y = ProbeHeight.Y + XYZ;
+                                    ProbeHeight.Z = ProbeHeight.Z + XYZ;
+                                    ProbeHeight.XOpp = ProbeHeight.XOpp + XYZ;
+                                    ProbeHeight.YOpp = ProbeHeight.YOpp + XYZ;
+                                    ProbeHeight.ZOpp = ProbeHeight.ZOpp + XYZ;
                                 }
 
-                                X = checkZero(X);
-                                Y = checkZero(Y);
-                                Z = checkZero(Z);
-                                XOpp = checkZero(XOpp);
-                                YOpp = checkZero(YOpp);
-                                ZOpp = checkZero(ZOpp);
+                                ProbeHeight.X = checkZero(ProbeHeight.X);
+                                ProbeHeight.Y = checkZero(ProbeHeight.Y);
+                                ProbeHeight.Z = checkZero(ProbeHeight.Z);
+                                ProbeHeight.XOpp = checkZero(ProbeHeight.XOpp);
+                                ProbeHeight.YOpp = checkZero(ProbeHeight.YOpp);
+                                ProbeHeight.ZOpp = checkZero(ProbeHeight.ZOpp);
 
                                 //XYZ is zero
                                 if (XYZOpp < accuracy && XYZOpp > -accuracy && XYZ < accuracy && XYZ > -accuracy)
@@ -2134,7 +2123,7 @@ namespace deltaKinematics
                             }
 
                             LogConsole("Diagonal Rod:" + diagonalRod + "\n");
-                            LogConsole("Heights: X:" + X + ", XOpp:" + XOpp + ", Y:" + Y + ", YOpp:" + YOpp + ", Z:" + Z + ", and ZOpp:" + ZOpp + "\n");
+                            LogConsole("Heights: X:" + ProbeHeight.X + ", XOpp:" + ProbeHeight.XOpp + ", Y:" + ProbeHeight.Y + ", YOpp:" + ProbeHeight.YOpp + ", Z:" + ProbeHeight.Z + ", and ZOpp:" + ProbeHeight.ZOpp + "\n");
 
                             //send obtained values back to the printer*************************************
                             //Thread.Sleep(5000);
@@ -2320,11 +2309,11 @@ namespace deltaKinematics
         private void analyzeGeometry()
         {
             //calculates the tower angle at the top and bottom
-            towerXRotation = Math.Acos((plateDiameter * 0.963) / Math.Sqrt(Math.Pow(Math.Abs(X - XOpp), 2) + Math.Pow((plateDiameter * 0.963), 2))) * 57.296 * 5;
-            towerYRotation = Math.Acos((plateDiameter * 0.963) / Math.Sqrt(Math.Pow(Math.Abs(Y - YOpp), 2) + Math.Pow((plateDiameter * 0.963), 2))) * 57.296 * 5;
-            towerZRotation = Math.Acos((plateDiameter * 0.963) / Math.Sqrt(Math.Pow(Math.Abs(Z - ZOpp), 2) + Math.Pow((plateDiameter * 0.963), 2))) * 57.296 * 5;
+            towerXRotation = Math.Acos((plateDiameter * 0.963) / Math.Sqrt(Math.Pow(Math.Abs(ProbeHeight.X - ProbeHeight.XOpp), 2) + Math.Pow((plateDiameter * 0.963), 2))) * 57.296 * 5;
+            towerYRotation = Math.Acos((plateDiameter * 0.963) / Math.Sqrt(Math.Pow(Math.Abs(ProbeHeight.Y - ProbeHeight.YOpp), 2) + Math.Pow((plateDiameter * 0.963), 2))) * 57.296 * 5;
+            towerZRotation = Math.Acos((plateDiameter * 0.963) / Math.Sqrt(Math.Pow(Math.Abs(ProbeHeight.Z - ProbeHeight.ZOpp), 2) + Math.Pow((plateDiameter * 0.963), 2))) * 57.296 * 5;
 
-            if (X < XOpp)
+            if (ProbeHeight.X < ProbeHeight.XOpp)
             {
                 towerXRotation = 90 - towerXRotation;
             }
@@ -2333,7 +2322,7 @@ namespace deltaKinematics
                 towerXRotation = 90 + towerXRotation;
             }
 
-            if (Y < YOpp)
+            if (ProbeHeight.Y < ProbeHeight.YOpp)
             {
                 towerYRotation = 90 - towerYRotation;
             }
@@ -2342,7 +2331,7 @@ namespace deltaKinematics
                 towerYRotation = 90 + towerYRotation;
             }
 
-            if (Z < ZOpp)
+            if (ProbeHeight.Z < ProbeHeight.ZOpp)
             {
                 towerZRotation = 90 - towerZRotation;
             }

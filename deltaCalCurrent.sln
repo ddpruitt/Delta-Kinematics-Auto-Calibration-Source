@@ -5,6 +5,8 @@ VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Delta Kinematics Automatic Calibration", "WindowsFormsApplication1\Delta Kinematics Automatic Calibration.csproj", "{8E226CFF-2745-473D-B6EF-9587B661F08C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaKinematics.Core", "DeltaKinematics.Core\DeltaKinematics.Core.csproj", "{93DBAF95-4F22-412F-8D97-0F179DB98038}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{8E226CFF-2745-473D-B6EF-9587B661F08C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8E226CFF-2745-473D-B6EF-9587B661F08C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8E226CFF-2745-473D-B6EF-9587B661F08C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93DBAF95-4F22-412F-8D97-0F179DB98038}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93DBAF95-4F22-412F-8D97-0F179DB98038}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93DBAF95-4F22-412F-8D97-0F179DB98038}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93DBAF95-4F22-412F-8D97-0F179DB98038}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
