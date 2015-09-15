@@ -82,6 +82,22 @@
     <Compile Include="Delta Kinematics Bed Correction.Designer.cs">
       <DependentUpon>Delta Kinematics Bed Correction.cs</DependentUpon>
     </Compile>
+    <Compile Include="Form.CalibrationFunctions.cs">
+      <DependentUpon>Delta Kinematics Bed Correction.cs</DependentUpon>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form.Functions.cs">
+      <DependentUpon>Delta Kinematics Bed Correction.cs</DependentUpon>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form.Events.cs">
+      <DependentUpon>Delta Kinematics Bed Correction.cs</DependentUpon>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form.SerialComs.cs">
+      <DependentUpon>Delta Kinematics Bed Correction.cs</DependentUpon>
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Delta Kinematics Bed Correction.resx">
@@ -97,7 +113,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <None Include="ClassDiagram1.cd" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
