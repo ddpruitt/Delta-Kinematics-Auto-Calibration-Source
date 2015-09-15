@@ -17,8 +17,13 @@ namespace deltaKinematics
 
         public ProbeHeight ProbeHeight { get; }
 
+        public ProbeHeight TempProbeHeight { get; }
+
+        public ProbeHeight Temp2ProbeHeight { get; }
+
         string versionState = "2.0.4PA";
         string wait = "wait";
+
         //////////////////////////
         private double centerHeight;
         private int zProbeSet = 0;
@@ -28,18 +33,6 @@ namespace deltaKinematics
         private int calculationCheckCount = 0;
         private int pauseTimeSet = 1000;
         private int j = 0;
-        private double tempX;
-        private double tempXOpp;
-        private double tempY;
-        private double tempYOpp;
-        private double tempZ;
-        private double tempZOpp;
-        private double tempX2;
-        private double tempXOpp2;
-        private double tempY2;
-        private double tempYOpp2;
-        private double tempZ2;
-        private double tempZOpp2;
 
         private double calculationX;
         private double calculationXOpp;
@@ -210,12 +203,12 @@ namespace deltaKinematics
                 Invoke((MethodInvoker)delegate { this.textZOppTemp.Text = Math.Round(ProbeHeight.ZOpp, 3).ToString(); });
                 
                 //calculate parameters
-                tempX = ProbeHeight.X;
-                tempXOpp = ProbeHeight.XOpp;
-                tempY = ProbeHeight.Y;
-                tempYOpp = ProbeHeight.YOpp;
-                tempZ = ProbeHeight.Z;
-                tempZOpp = ProbeHeight.ZOpp;
+                TempProbeHeight.X = ProbeHeight.X;
+                TempProbeHeight.XOpp = ProbeHeight.XOpp;
+                TempProbeHeight.Y = ProbeHeight.Y;
+                TempProbeHeight.YOpp = ProbeHeight.YOpp;
+                TempProbeHeight.Z = ProbeHeight.Z;
+                TempProbeHeight.ZOpp = ProbeHeight.ZOpp;
             }
             else
             {
@@ -268,6 +261,8 @@ namespace deltaKinematics
             InitializeComponent();
             Init();
             ProbeHeight = new ProbeHeight();
+            TempProbeHeight = new ProbeHeight();
+            Temp2ProbeHeight = new ProbeHeight();
         }
 
         // Initialize the application.
@@ -761,8 +756,8 @@ namespace deltaKinematics
                                     else if (advancedCalCount == 1)
                                     {//get diagonal rod percentages
 
-                                        deltaTower = ((tempX - ProbeHeight.X) + (tempY - ProbeHeight.Y) + (tempZ - ProbeHeight.Z)) / 3;
-                                        deltaOpp = ((tempXOpp - ProbeHeight.XOpp) + (tempYOpp - ProbeHeight.YOpp) + (tempZOpp - ProbeHeight.ZOpp)) / 3;
+                                        deltaTower = ((TempProbeHeight.X - ProbeHeight.X) + (TempProbeHeight.Y - ProbeHeight.Y) + (TempProbeHeight.Z - ProbeHeight.Z)) / 3;
+                                        deltaOpp = ((TempProbeHeight.XOpp - ProbeHeight.XOpp) + (TempProbeHeight.YOpp - ProbeHeight.YOpp) + (TempProbeHeight.ZOpp - ProbeHeight.ZOpp)) / 3;
 
                                         if (_serialPort.IsOpen)
                                         {
@@ -783,7 +778,7 @@ namespace deltaKinematics
                                     }
                                     else if (advancedCalCount == 2)
                                     {//get HRad percentages
-                                        HRadRatio = -(Math.Abs((ProbeHeight.X - tempX) + (ProbeHeight.Y - tempY) + (ProbeHeight.Z - tempZ) + (ProbeHeight.XOpp - tempXOpp) + (ProbeHeight.YOpp - tempYOpp) + (ProbeHeight.ZOpp - tempZOpp))) / 6;
+                                        HRadRatio = -(Math.Abs((ProbeHeight.X - TempProbeHeight.X) + (ProbeHeight.Y - TempProbeHeight.Y) + (ProbeHeight.Z - TempProbeHeight.Z) + (ProbeHeight.XOpp - TempProbeHeight.XOpp) + (ProbeHeight.YOpp - TempProbeHeight.YOpp) + (ProbeHeight.ZOpp - TempProbeHeight.ZOpp))) / 6;
 
                                         if (_serialPort.IsOpen)
                                         {
@@ -805,12 +800,12 @@ namespace deltaKinematics
                                     else if (advancedCalCount == 3)
                                     {//get X offset percentages
 
-                                        offsetXCorrection = Math.Abs(1 / (ProbeHeight.X - tempX));
-                                        xxOppPerc = Math.Abs((ProbeHeight.XOpp - tempXOpp) / (ProbeHeight.X - tempX));
-                                        xyPerc = Math.Abs((ProbeHeight.Y - tempY) / (ProbeHeight.X - tempX));
-                                        xyOppPerc = Math.Abs((ProbeHeight.YOpp - tempYOpp) / (ProbeHeight.X - tempX));
-                                        xzPerc = Math.Abs((ProbeHeight.Z - tempZ) / (ProbeHeight.X - tempX));
-                                        xzOppPerc = Math.Abs((ProbeHeight.ZOpp - tempZOpp) / (ProbeHeight.X - tempX));
+                                        offsetXCorrection = Math.Abs(1 / (ProbeHeight.X - TempProbeHeight.X));
+                                        xxOppPerc = Math.Abs((ProbeHeight.XOpp - TempProbeHeight.XOpp) / (ProbeHeight.X - TempProbeHeight.X));
+                                        xyPerc = Math.Abs((ProbeHeight.Y - TempProbeHeight.Y) / (ProbeHeight.X - TempProbeHeight.X));
+                                        xyOppPerc = Math.Abs((ProbeHeight.YOpp - TempProbeHeight.YOpp) / (ProbeHeight.X - TempProbeHeight.X));
+                                        xzPerc = Math.Abs((ProbeHeight.Z - TempProbeHeight.Z) / (ProbeHeight.X - TempProbeHeight.X));
+                                        xzOppPerc = Math.Abs((ProbeHeight.ZOpp - TempProbeHeight.ZOpp) / (ProbeHeight.X - TempProbeHeight.X));
 
                                         if (_serialPort.IsOpen)
                                         {
@@ -832,12 +827,12 @@ namespace deltaKinematics
                                     else if (advancedCalCount == 4)
                                     {//get Y offset percentages
 
-                                        offsetYCorrection = Math.Abs(1 / (ProbeHeight.Y - tempY));
-                                        yyOppPerc = Math.Abs((ProbeHeight.YOpp - tempYOpp) / (ProbeHeight.Y - tempY));
-                                        yxPerc = Math.Abs((ProbeHeight.X - tempX) / (ProbeHeight.Y - tempY));
-                                        yxOppPerc = Math.Abs((ProbeHeight.XOpp - tempXOpp) / (ProbeHeight.Y - tempY));
-                                        yzPerc = Math.Abs((ProbeHeight.Z - tempZ) / (ProbeHeight.Y - tempY));
-                                        yzOppPerc = Math.Abs((ProbeHeight.ZOpp - tempZOpp) / (ProbeHeight.Y - tempY));
+                                        offsetYCorrection = Math.Abs(1 / (ProbeHeight.Y - TempProbeHeight.Y));
+                                        yyOppPerc = Math.Abs((ProbeHeight.YOpp - TempProbeHeight.YOpp) / (ProbeHeight.Y - TempProbeHeight.Y));
+                                        yxPerc = Math.Abs((ProbeHeight.X - TempProbeHeight.X) / (ProbeHeight.Y - TempProbeHeight.Y));
+                                        yxOppPerc = Math.Abs((ProbeHeight.XOpp - TempProbeHeight.XOpp) / (ProbeHeight.Y - TempProbeHeight.Y));
+                                        yzPerc = Math.Abs((ProbeHeight.Z - TempProbeHeight.Z) / (ProbeHeight.Y - TempProbeHeight.Y));
+                                        yzOppPerc = Math.Abs((ProbeHeight.ZOpp - TempProbeHeight.ZOpp) / (ProbeHeight.Y - TempProbeHeight.Y));
 
                                         if (_serialPort.IsOpen)
                                         {
@@ -859,12 +854,12 @@ namespace deltaKinematics
                                     else if (advancedCalCount == 5)
                                     {//get Z offset percentages
 
-                                        offsetZCorrection = Math.Abs(1 / (ProbeHeight.Z - tempZ));
-                                        zzOppPerc = Math.Abs((ProbeHeight.ZOpp - tempZOpp) / (ProbeHeight.Z - tempZ));
-                                        zxPerc = Math.Abs((ProbeHeight.X - tempX) / (ProbeHeight.Z - tempZ));
-                                        zxOppPerc = Math.Abs((ProbeHeight.XOpp - tempXOpp) / (ProbeHeight.Z - tempZ));
-                                        zyPerc = Math.Abs((ProbeHeight.Y - tempY) / (ProbeHeight.Z - tempZ));
-                                        zyOppPerc = Math.Abs((ProbeHeight.YOpp - tempYOpp) / (ProbeHeight.Z - tempZ));
+                                        offsetZCorrection = Math.Abs(1 / (ProbeHeight.Z - TempProbeHeight.Z));
+                                        zzOppPerc = Math.Abs((ProbeHeight.ZOpp - TempProbeHeight.ZOpp) / (ProbeHeight.Z - TempProbeHeight.Z));
+                                        zxPerc = Math.Abs((ProbeHeight.X - TempProbeHeight.X) / (ProbeHeight.Z - TempProbeHeight.Z));
+                                        zxOppPerc = Math.Abs((ProbeHeight.XOpp - TempProbeHeight.XOpp) / (ProbeHeight.Z - TempProbeHeight.Z));
+                                        zyPerc = Math.Abs((ProbeHeight.Y - TempProbeHeight.Y) / (ProbeHeight.Z - TempProbeHeight.Z));
+                                        zyOppPerc = Math.Abs((ProbeHeight.YOpp - TempProbeHeight.YOpp) / (ProbeHeight.Z - TempProbeHeight.Z));
 
                                         if (_serialPort.IsOpen)
                                         {
@@ -887,7 +882,7 @@ namespace deltaKinematics
                                     else if (advancedCalCount == 6)//6
                                     {//get A alpha rotation
 
-                                        alphaRotationPercentageX = (2 / Math.Abs((ProbeHeight.YOpp - ProbeHeight.ZOpp) - (tempYOpp - tempZOpp)));
+                                        alphaRotationPercentageX = (2 / Math.Abs((ProbeHeight.YOpp - ProbeHeight.ZOpp) - (TempProbeHeight.YOpp - TempProbeHeight.ZOpp)));
 
                                         if (_serialPort.IsOpen)
                                         {
@@ -909,7 +904,7 @@ namespace deltaKinematics
                                     else if (advancedCalCount == 7)//7
                                     {//get B alpha rotation
 
-                                        alphaRotationPercentageY = (2 / Math.Abs((ProbeHeight.ZOpp - ProbeHeight.XOpp) - (tempZOpp - tempXOpp)));
+                                        alphaRotationPercentageY = (2 / Math.Abs((ProbeHeight.ZOpp - ProbeHeight.XOpp) - (TempProbeHeight.ZOpp - TempProbeHeight.XOpp)));
 
                                         if (_serialPort.IsOpen)
                                         {
@@ -931,7 +926,7 @@ namespace deltaKinematics
                                     else if (advancedCalCount == 8)//8
                                     {//get C alpha rotation
 
-                                        alphaRotationPercentageZ = (2 / Math.Abs((ProbeHeight.XOpp - ProbeHeight.YOpp) - (tempXOpp - tempYOpp)));
+                                        alphaRotationPercentageZ = (2 / Math.Abs((ProbeHeight.XOpp - ProbeHeight.YOpp) - (TempProbeHeight.XOpp - TempProbeHeight.YOpp)));
 
                                         if (_serialPort.IsOpen)
                                         {
@@ -1267,176 +1262,176 @@ namespace deltaKinematics
                     ////////////////////////////////////////////////////////////////////////////////
                     //Tower Offset Calibration******************************************************
                     int j = 0;
-                    tempX2 = ProbeHeight.X;
-                    tempXOpp2 = ProbeHeight.XOpp;
-                    tempY2 = ProbeHeight.Y;
-                    tempYOpp2 = ProbeHeight.YOpp;
-                    tempZ2 = ProbeHeight.Z;
-                    tempZOpp2 = ProbeHeight.ZOpp;
+                    Temp2ProbeHeight.X = ProbeHeight.X;
+                    Temp2ProbeHeight.XOpp = ProbeHeight.XOpp;
+                    Temp2ProbeHeight.Y = ProbeHeight.Y;
+                    Temp2ProbeHeight.YOpp = ProbeHeight.YOpp;
+                    Temp2ProbeHeight.Z = ProbeHeight.Z;
+                    Temp2ProbeHeight.ZOpp = ProbeHeight.ZOpp;
 
                     while (j < 100)
                     {
-                        double theoryX = offsetX + tempX2 * stepsPerMM * offsetXCorrection;
+                        double theoryX = offsetX + Temp2ProbeHeight.X * stepsPerMM * offsetXCorrection;
 
                         //correction of one tower allows for XY dimensional accuracy
-                        if (tempX2 > 0)
+                        if (Temp2ProbeHeight.X > 0)
                         {
                             //if x is positive
-                            offsetX = offsetX + tempX2 * stepsPerMM * offsetXCorrection;
+                            offsetX = offsetX + Temp2ProbeHeight.X * stepsPerMM * offsetXCorrection;
 
-                            tempXOpp2 = tempXOpp2 + (tempX2 * xxOppPerc);//0.5
-                            tempZ2 = tempZ2 + (tempX2 * xzPerc);//0.25
-                            tempY2 = tempY2 + (tempX2 * xyPerc);//0.25
-                            tempZOpp2 = tempZOpp2 - (tempX2 * xzOppPerc);//0.25
-                            tempYOpp2 = tempYOpp2 - (tempX2 * xyOppPerc);//0.25
-                            tempX2 = tempX2 - tempX2;
+                            Temp2ProbeHeight.XOpp = Temp2ProbeHeight.XOpp + (Temp2ProbeHeight.X * xxOppPerc);//0.5
+                            Temp2ProbeHeight.Z = Temp2ProbeHeight.Z + (Temp2ProbeHeight.X * xzPerc);//0.25
+                            Temp2ProbeHeight.Y = Temp2ProbeHeight.Y + (Temp2ProbeHeight.X * xyPerc);//0.25
+                            Temp2ProbeHeight.ZOpp = Temp2ProbeHeight.ZOpp - (Temp2ProbeHeight.X * xzOppPerc);//0.25
+                            Temp2ProbeHeight.YOpp = Temp2ProbeHeight.YOpp - (Temp2ProbeHeight.X * xyOppPerc);//0.25
+                            Temp2ProbeHeight.X = Temp2ProbeHeight.X - Temp2ProbeHeight.X;
                         }
-                        else if (theoryX > 0 && tempX2 < 0)
+                        else if (theoryX > 0 && Temp2ProbeHeight.X < 0)
                         {
                             //if x is negative and can be decreased
-                            offsetX = offsetX + tempX2 * stepsPerMM * offsetXCorrection;
+                            offsetX = offsetX + Temp2ProbeHeight.X * stepsPerMM * offsetXCorrection;
 
-                            tempXOpp2 = tempXOpp2 + (tempX2 * xxOppPerc);//0.5
-                            tempZ2 = tempZ2 + (tempX2 * xzPerc);//0.25
-                            tempY2 = tempY2 + (tempX2 * xyPerc);//0.25
-                            tempZOpp2 = tempZOpp2 - (tempX2 * xzOppPerc);//0.25
-                            tempYOpp2 = tempYOpp2 - (tempX2 * xyOppPerc);//0.25
-                            tempX2 = tempX2 - tempX2;
+                            Temp2ProbeHeight.XOpp = Temp2ProbeHeight.XOpp + (Temp2ProbeHeight.X * xxOppPerc);//0.5
+                            Temp2ProbeHeight.Z = Temp2ProbeHeight.Z + (Temp2ProbeHeight.X * xzPerc);//0.25
+                            Temp2ProbeHeight.Y = Temp2ProbeHeight.Y + (Temp2ProbeHeight.X * xyPerc);//0.25
+                            Temp2ProbeHeight.ZOpp = Temp2ProbeHeight.ZOpp - (Temp2ProbeHeight.X * xzOppPerc);//0.25
+                            Temp2ProbeHeight.YOpp = Temp2ProbeHeight.YOpp - (Temp2ProbeHeight.X * xyOppPerc);//0.25
+                            Temp2ProbeHeight.X = Temp2ProbeHeight.X - Temp2ProbeHeight.X;
                         }
                         else
                         {
                             //if tempX2 is negative
-                            offsetY = offsetY - tempX2 * stepsPerMM * offsetYCorrection * 2;
-                            offsetZ = offsetZ - tempX2 * stepsPerMM * offsetZCorrection * 2;
+                            offsetY = offsetY - Temp2ProbeHeight.X * stepsPerMM * offsetYCorrection * 2;
+                            offsetZ = offsetZ - Temp2ProbeHeight.X * stepsPerMM * offsetZCorrection * 2;
 
-                            tempYOpp2 = tempYOpp2 - (tempX2 * 2 * yyOppPerc);
-                            tempX2 = tempX2 - (tempX2 * 2 * yxPerc);
-                            tempZ2 = tempZ2 - (tempX2 * 2 * yxPerc);
-                            tempXOpp2 = tempXOpp2 + (tempX2 * 2 * yxOppPerc);
-                            tempZOpp2 = tempZOpp2 + (tempX2 * 2 * yxOppPerc);
-                            tempY2 = tempY2 + tempX2 * 2;
+                            Temp2ProbeHeight.YOpp = Temp2ProbeHeight.YOpp - (Temp2ProbeHeight.X * 2 * yyOppPerc);
+                            Temp2ProbeHeight.X = Temp2ProbeHeight.X - (Temp2ProbeHeight.X * 2 * yxPerc);
+                            Temp2ProbeHeight.Z = Temp2ProbeHeight.Z - (Temp2ProbeHeight.X * 2 * yxPerc);
+                            Temp2ProbeHeight.XOpp = Temp2ProbeHeight.XOpp + (Temp2ProbeHeight.X * 2 * yxOppPerc);
+                            Temp2ProbeHeight.ZOpp = Temp2ProbeHeight.ZOpp + (Temp2ProbeHeight.X * 2 * yxOppPerc);
+                            Temp2ProbeHeight.Y = Temp2ProbeHeight.Y + Temp2ProbeHeight.X * 2;
 
-                            tempZOpp2 = tempZOpp2 - (tempX2 * 2 * zzOppPerc);
-                            tempX2 = tempX2 - (tempX2 * 2 * zxPerc);
-                            tempY2 = tempY2 - (tempX2 * 2 * zyPerc);
-                            tempXOpp2 = tempXOpp2 + (tempX2 * 2 * yxOppPerc);
-                            tempYOpp2 = tempYOpp2 + (tempX2 * 2 * zyOppPerc);
-                            tempZ2 = tempZ2 + tempX2 * 2;
+                            Temp2ProbeHeight.ZOpp = Temp2ProbeHeight.ZOpp - (Temp2ProbeHeight.X * 2 * zzOppPerc);
+                            Temp2ProbeHeight.X = Temp2ProbeHeight.X - (Temp2ProbeHeight.X * 2 * zxPerc);
+                            Temp2ProbeHeight.Y = Temp2ProbeHeight.Y - (Temp2ProbeHeight.X * 2 * zyPerc);
+                            Temp2ProbeHeight.XOpp = Temp2ProbeHeight.XOpp + (Temp2ProbeHeight.X * 2 * yxOppPerc);
+                            Temp2ProbeHeight.YOpp = Temp2ProbeHeight.YOpp + (Temp2ProbeHeight.X * 2 * zyOppPerc);
+                            Temp2ProbeHeight.Z = Temp2ProbeHeight.Z + Temp2ProbeHeight.X * 2;
                         }
 
-                        double theoryY = offsetY + tempY2 * stepsPerMM * offsetYCorrection;
+                        double theoryY = offsetY + Temp2ProbeHeight.Y * stepsPerMM * offsetYCorrection;
 
                         //Y
-                        if (tempY2 > 0)
+                        if (Temp2ProbeHeight.Y > 0)
                         {
-                            offsetY = offsetY + tempY2 * stepsPerMM * offsetYCorrection;
+                            offsetY = offsetY + Temp2ProbeHeight.Y * stepsPerMM * offsetYCorrection;
 
-                            tempYOpp2 = tempYOpp2 + (tempY2 * yyOppPerc);
-                            tempX2 = tempX2 + (tempY2 * yxPerc);
-                            tempZ2 = tempZ2 + (tempY2 * yxPerc);
-                            tempXOpp2 = tempXOpp2 - (tempY2 * yxOppPerc);
-                            tempZOpp2 = tempZOpp2 - (tempY2 * yxOppPerc);
-                            tempY2 = tempY2 - tempY2;
+                            Temp2ProbeHeight.YOpp = Temp2ProbeHeight.YOpp + (Temp2ProbeHeight.Y * yyOppPerc);
+                            Temp2ProbeHeight.X = Temp2ProbeHeight.X + (Temp2ProbeHeight.Y * yxPerc);
+                            Temp2ProbeHeight.Z = Temp2ProbeHeight.Z + (Temp2ProbeHeight.Y * yxPerc);
+                            Temp2ProbeHeight.XOpp = Temp2ProbeHeight.XOpp - (Temp2ProbeHeight.Y * yxOppPerc);
+                            Temp2ProbeHeight.ZOpp = Temp2ProbeHeight.ZOpp - (Temp2ProbeHeight.Y * yxOppPerc);
+                            Temp2ProbeHeight.Y = Temp2ProbeHeight.Y - Temp2ProbeHeight.Y;
                         }
-                        else if (theoryY > 0 && tempY2 < 0)
+                        else if (theoryY > 0 && Temp2ProbeHeight.Y < 0)
                         {
-                            offsetY = offsetY + tempY2 * stepsPerMM * offsetYCorrection;
+                            offsetY = offsetY + Temp2ProbeHeight.Y * stepsPerMM * offsetYCorrection;
 
-                            tempYOpp2 = tempYOpp2 + (tempY2 * yyOppPerc);
-                            tempX2 = tempX2 + (tempY2 * yxPerc);
-                            tempZ2 = tempZ2 + (tempY2 * yxPerc);
-                            tempXOpp2 = tempXOpp2 - (tempY2 * yxOppPerc);
-                            tempZOpp2 = tempZOpp2 - (tempY2 * yxOppPerc);
-                            tempY2 = tempY2 - tempY2;
+                            Temp2ProbeHeight.YOpp = Temp2ProbeHeight.YOpp + (Temp2ProbeHeight.Y * yyOppPerc);
+                            Temp2ProbeHeight.X = Temp2ProbeHeight.X + (Temp2ProbeHeight.Y * yxPerc);
+                            Temp2ProbeHeight.Z = Temp2ProbeHeight.Z + (Temp2ProbeHeight.Y * yxPerc);
+                            Temp2ProbeHeight.XOpp = Temp2ProbeHeight.XOpp - (Temp2ProbeHeight.Y * yxOppPerc);
+                            Temp2ProbeHeight.ZOpp = Temp2ProbeHeight.ZOpp - (Temp2ProbeHeight.Y * yxOppPerc);
+                            Temp2ProbeHeight.Y = Temp2ProbeHeight.Y - Temp2ProbeHeight.Y;
                         }
                         else
                         {
-                            offsetX = offsetX - tempY2 * stepsPerMM * offsetXCorrection * 2;
-                            offsetZ = offsetZ - tempY2 * stepsPerMM * offsetZCorrection * 2;
+                            offsetX = offsetX - Temp2ProbeHeight.Y * stepsPerMM * offsetXCorrection * 2;
+                            offsetZ = offsetZ - Temp2ProbeHeight.Y * stepsPerMM * offsetZCorrection * 2;
 
-                            tempXOpp2 = tempXOpp2 - (tempY2 * 2 * xxOppPerc);//0.5
-                            tempZ2 = tempZ2 - (tempY2 * 2 * xzPerc);//0.25
-                            tempY2 = tempY2 - (tempY2 * 2 * xyPerc);//0.25
-                            tempZOpp2 = tempZOpp2 + (tempY2 * 2 * xzOppPerc);//0.25
-                            tempYOpp2 = tempYOpp2 + (tempY2 * 2 * xyOppPerc);//0.25
-                            tempX2 = tempX2 + tempY2 * 2;
+                            Temp2ProbeHeight.XOpp = Temp2ProbeHeight.XOpp - (Temp2ProbeHeight.Y * 2 * xxOppPerc);//0.5
+                            Temp2ProbeHeight.Z = Temp2ProbeHeight.Z - (Temp2ProbeHeight.Y * 2 * xzPerc);//0.25
+                            Temp2ProbeHeight.Y = Temp2ProbeHeight.Y - (Temp2ProbeHeight.Y * 2 * xyPerc);//0.25
+                            Temp2ProbeHeight.ZOpp = Temp2ProbeHeight.ZOpp + (Temp2ProbeHeight.Y * 2 * xzOppPerc);//0.25
+                            Temp2ProbeHeight.YOpp = Temp2ProbeHeight.YOpp + (Temp2ProbeHeight.Y * 2 * xyOppPerc);//0.25
+                            Temp2ProbeHeight.X = Temp2ProbeHeight.X + Temp2ProbeHeight.Y * 2;
 
-                            tempZOpp2 = tempZOpp2 - (tempY2 * 2 * zzOppPerc);
-                            tempX2 = tempX2 - (tempY2 * 2 * zxPerc);
-                            tempY2 = tempY2 - (tempY2 * 2 * zyPerc);
-                            tempXOpp2 = tempXOpp2 + (tempY2 * 2 * yxOppPerc);
-                            tempYOpp2 = tempYOpp2 + (tempY2 * 2 * zyOppPerc);
-                            tempZ2 = tempZ2 + tempY2 * 2;
+                            Temp2ProbeHeight.ZOpp = Temp2ProbeHeight.ZOpp - (Temp2ProbeHeight.Y * 2 * zzOppPerc);
+                            Temp2ProbeHeight.X = Temp2ProbeHeight.X - (Temp2ProbeHeight.Y * 2 * zxPerc);
+                            Temp2ProbeHeight.Y = Temp2ProbeHeight.Y - (Temp2ProbeHeight.Y * 2 * zyPerc);
+                            Temp2ProbeHeight.XOpp = Temp2ProbeHeight.XOpp + (Temp2ProbeHeight.Y * 2 * yxOppPerc);
+                            Temp2ProbeHeight.YOpp = Temp2ProbeHeight.YOpp + (Temp2ProbeHeight.Y * 2 * zyOppPerc);
+                            Temp2ProbeHeight.Z = Temp2ProbeHeight.Z + Temp2ProbeHeight.Y * 2;
                         }
 
-                        double theoryZ = offsetZ + tempZ2 * stepsPerMM * offsetZCorrection;
+                        double theoryZ = offsetZ + Temp2ProbeHeight.Z * stepsPerMM * offsetZCorrection;
 
                         //Z
-                        if (tempZ2 > 0)
+                        if (Temp2ProbeHeight.Z > 0)
                         {
-                            offsetZ = offsetZ + tempZ2 * stepsPerMM * offsetZCorrection;
+                            offsetZ = offsetZ + Temp2ProbeHeight.Z * stepsPerMM * offsetZCorrection;
 
-                            tempZOpp2 = tempZOpp2 + (tempZ2 * zzOppPerc);
-                            tempX2 = tempX2 + (tempZ2 * zxPerc);
-                            tempY2 = tempY2 + (tempZ2 * zyPerc);
-                            tempXOpp2 = tempXOpp2 - (tempZ2 * yxOppPerc);
-                            tempYOpp2 = tempYOpp2 - (tempZ2 * zyOppPerc);
-                            tempZ2 = tempZ2 - tempZ2;
+                            Temp2ProbeHeight.ZOpp = Temp2ProbeHeight.ZOpp + (Temp2ProbeHeight.Z * zzOppPerc);
+                            Temp2ProbeHeight.X = Temp2ProbeHeight.X + (Temp2ProbeHeight.Z * zxPerc);
+                            Temp2ProbeHeight.Y = Temp2ProbeHeight.Y + (Temp2ProbeHeight.Z * zyPerc);
+                            Temp2ProbeHeight.XOpp = Temp2ProbeHeight.XOpp - (Temp2ProbeHeight.Z * yxOppPerc);
+                            Temp2ProbeHeight.YOpp = Temp2ProbeHeight.YOpp - (Temp2ProbeHeight.Z * zyOppPerc);
+                            Temp2ProbeHeight.Z = Temp2ProbeHeight.Z - Temp2ProbeHeight.Z;
                         }
-                        else if (theoryZ > 0 && tempZ2 < 0)
+                        else if (theoryZ > 0 && Temp2ProbeHeight.Z < 0)
                         {
-                            offsetZ = offsetZ + tempZ2 * stepsPerMM * offsetZCorrection;
+                            offsetZ = offsetZ + Temp2ProbeHeight.Z * stepsPerMM * offsetZCorrection;
 
-                            tempZOpp2 = tempZOpp2 + (tempZ2 * zzOppPerc);
-                            tempX2 = tempX2 + (tempZ2 * zxPerc);
-                            tempY2 = tempY2 + (tempZ2 * zyPerc);
-                            tempXOpp2 = tempXOpp2 - (tempZ2 * yxOppPerc);
-                            tempYOpp2 = tempYOpp2 - (tempZ2 * zyOppPerc);
-                            tempZ2 = tempZ2 - tempZ2;
+                            Temp2ProbeHeight.ZOpp = Temp2ProbeHeight.ZOpp + (Temp2ProbeHeight.Z * zzOppPerc);
+                            Temp2ProbeHeight.X = Temp2ProbeHeight.X + (Temp2ProbeHeight.Z * zxPerc);
+                            Temp2ProbeHeight.Y = Temp2ProbeHeight.Y + (Temp2ProbeHeight.Z * zyPerc);
+                            Temp2ProbeHeight.XOpp = Temp2ProbeHeight.XOpp - (Temp2ProbeHeight.Z * yxOppPerc);
+                            Temp2ProbeHeight.YOpp = Temp2ProbeHeight.YOpp - (Temp2ProbeHeight.Z * zyOppPerc);
+                            Temp2ProbeHeight.Z = Temp2ProbeHeight.Z - Temp2ProbeHeight.Z;
                         }
                         else
                         {
-                            offsetY = offsetY - tempZ2 * stepsPerMM * offsetYCorrection * 2;
-                            offsetX = offsetX - tempZ2 * stepsPerMM * offsetXCorrection * 2;
+                            offsetY = offsetY - Temp2ProbeHeight.Z * stepsPerMM * offsetYCorrection * 2;
+                            offsetX = offsetX - Temp2ProbeHeight.Z * stepsPerMM * offsetXCorrection * 2;
 
-                            tempXOpp2 = tempXOpp2 - (tempZ2 * 2 * xxOppPerc);//0.5
-                            tempZ2 = tempZ2 - (tempZ2 * 2 * xzPerc);//0.25
-                            tempY2 = tempY2 - (tempZ2 * 2 * xyPerc);//0.25
-                            tempZOpp2 = tempZOpp2 + (tempZ2 * 2 * xzOppPerc);//0.25
-                            tempYOpp2 = tempYOpp2 + (tempZ2 * 2 * xyOppPerc);//0.25
-                            tempX2 = tempX2 + tempZ2 * 2;
+                            Temp2ProbeHeight.XOpp = Temp2ProbeHeight.XOpp - (Temp2ProbeHeight.Z * 2 * xxOppPerc);//0.5
+                            Temp2ProbeHeight.Z = Temp2ProbeHeight.Z - (Temp2ProbeHeight.Z * 2 * xzPerc);//0.25
+                            Temp2ProbeHeight.Y = Temp2ProbeHeight.Y - (Temp2ProbeHeight.Z * 2 * xyPerc);//0.25
+                            Temp2ProbeHeight.ZOpp = Temp2ProbeHeight.ZOpp + (Temp2ProbeHeight.Z * 2 * xzOppPerc);//0.25
+                            Temp2ProbeHeight.YOpp = Temp2ProbeHeight.YOpp + (Temp2ProbeHeight.Z * 2 * xyOppPerc);//0.25
+                            Temp2ProbeHeight.X = Temp2ProbeHeight.X + Temp2ProbeHeight.Z * 2;
 
-                            tempYOpp2 = tempYOpp2 - (tempZ2 * 2 * yyOppPerc);
-                            tempX2 = tempX2 - (tempZ2 * 2 * yxPerc);
-                            tempZ2 = tempZ2 - (tempZ2 * 2 * yxPerc);
-                            tempXOpp2 = tempXOpp2 + (tempZ2 * 2 * yxOppPerc);
-                            tempZOpp2 = tempZOpp2 + (tempZ2 * 2 * yxOppPerc);
-                            tempY2 = tempY2 + tempZ2 * 2;
+                            Temp2ProbeHeight.YOpp = Temp2ProbeHeight.YOpp - (Temp2ProbeHeight.Z * 2 * yyOppPerc);
+                            Temp2ProbeHeight.X = Temp2ProbeHeight.X - (Temp2ProbeHeight.Z * 2 * yxPerc);
+                            Temp2ProbeHeight.Z = Temp2ProbeHeight.Z - (Temp2ProbeHeight.Z * 2 * yxPerc);
+                            Temp2ProbeHeight.XOpp = Temp2ProbeHeight.XOpp + (Temp2ProbeHeight.Z * 2 * yxOppPerc);
+                            Temp2ProbeHeight.ZOpp = Temp2ProbeHeight.ZOpp + (Temp2ProbeHeight.Z * 2 * yxOppPerc);
+                            Temp2ProbeHeight.Y = Temp2ProbeHeight.Y + Temp2ProbeHeight.Z * 2;
                         }
 
-                        tempX2 = checkZero(tempX2);
-                        tempY2 = checkZero(tempY2);
-                        tempZ2 = checkZero(tempZ2);
-                        tempXOpp2 = checkZero(tempXOpp2);
-                        tempYOpp2 = checkZero(tempYOpp2);
-                        tempZOpp2 = checkZero(tempZOpp2);
+                        Temp2ProbeHeight.X = checkZero(Temp2ProbeHeight.X);
+                        Temp2ProbeHeight.Y = checkZero(Temp2ProbeHeight.Y);
+                        Temp2ProbeHeight.Z = checkZero(Temp2ProbeHeight.Z);
+                        Temp2ProbeHeight.XOpp = checkZero(Temp2ProbeHeight.XOpp);
+                        Temp2ProbeHeight.YOpp = checkZero(Temp2ProbeHeight.YOpp);
+                        Temp2ProbeHeight.ZOpp = checkZero(Temp2ProbeHeight.ZOpp);
 
                         LogConsole("XYZ Calc: " + offsetX + " " + offsetY + " " + offsetZ);
-                        LogConsole("Height-Map: " + tempX2 + " " + tempXOpp2 + " " + tempY2 + " " + tempYOpp2 + " " + tempZ2 + " " + tempZOpp2);
+                        LogConsole("Height-Map: " + Temp2ProbeHeight.X + " " + Temp2ProbeHeight.XOpp + " " + Temp2ProbeHeight.Y + " " + Temp2ProbeHeight.YOpp + " " + Temp2ProbeHeight.Z + " " + Temp2ProbeHeight.ZOpp);
 
-                        if (tempX2 < accuracy && tempX2 > -accuracy && tempY2 < accuracy && tempY2 > -accuracy && tempZ2 < accuracy && tempZ2 > -accuracy && offsetX < 1000 && offsetY < 1000 && offsetZ < 1000)
+                        if (Temp2ProbeHeight.X < accuracy && Temp2ProbeHeight.X > -accuracy && Temp2ProbeHeight.Y < accuracy && Temp2ProbeHeight.Y > -accuracy && Temp2ProbeHeight.Z < accuracy && Temp2ProbeHeight.Z > -accuracy && offsetX < 1000 && offsetY < 1000 && offsetZ < 1000)
                         {
                             j = 100;
                         }
                         else if (j == 50)
                         {
                             //error protection
-                            tempX2 = ProbeHeight.X;
-                            tempXOpp2 = ProbeHeight.XOpp;
-                            tempY2 = ProbeHeight.Y;
-                            tempYOpp2 = ProbeHeight.YOpp;
-                            tempZ2 = ProbeHeight.Z;
-                            tempZOpp2 = ProbeHeight.ZOpp;
+                            Temp2ProbeHeight.X = ProbeHeight.X;
+                            Temp2ProbeHeight.XOpp = ProbeHeight.XOpp;
+                            Temp2ProbeHeight.Y = ProbeHeight.Y;
+                            Temp2ProbeHeight.YOpp = ProbeHeight.YOpp;
+                            Temp2ProbeHeight.Z = ProbeHeight.Z;
+                            Temp2ProbeHeight.ZOpp = ProbeHeight.ZOpp;
 
                             //X
                             offsetXCorrection = 1.5;
@@ -1484,12 +1479,12 @@ namespace deltaKinematics
                     }
                     else
                     {
-                        ProbeHeight.X = tempX2;
-                        ProbeHeight.XOpp = tempXOpp2;
-                        ProbeHeight.Y = tempY2;
-                        ProbeHeight.YOpp = tempYOpp2;
-                        ProbeHeight.Z = tempZ2;
-                        ProbeHeight.ZOpp = tempZOpp2;
+                        ProbeHeight.X = Temp2ProbeHeight.X;
+                        ProbeHeight.XOpp = Temp2ProbeHeight.XOpp;
+                        ProbeHeight.Y = Temp2ProbeHeight.Y;
+                        ProbeHeight.YOpp = Temp2ProbeHeight.YOpp;
+                        ProbeHeight.Z = Temp2ProbeHeight.Z;
+                        ProbeHeight.ZOpp = Temp2ProbeHeight.ZOpp;
                     }
 
                     //round to the nearest whole number
