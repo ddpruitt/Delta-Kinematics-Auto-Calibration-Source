@@ -19,6 +19,18 @@ namespace deltaKinematics
 
         public ProbeHeight CalculationProbeHeight { get; } = new ProbeHeight();
 
+        public Towers Towers { get; } = new Towers();
+
+        public TowerRotation TowerRotation { get; } = new TowerRotation();
+
+        public Offset Offset { get; } = new Offset();
+
+        public OffsetPercent OffsetPercent { get; } = new OffsetPercent();
+
+        public AlphaRotationPercentage AlphaRotationPercentage { get; } = new AlphaRotationPercentage();
+
+        public DiagonalRod DiagonalRod { get; } = new DiagonalRod();
+
         private string versionState = "2.0.4PA";
         private string wait = "wait";
 
@@ -32,8 +44,6 @@ namespace deltaKinematics
         private int pauseTimeSet = 1000;
         private int j = 0;
 
-        private double calculationTemp1;
-        private double HRadCorrection;
         private double plateDiameter;
         private double valueZ;
         private double valueXYLarge;
@@ -44,29 +54,6 @@ namespace deltaKinematics
         private double zMaxLength;
         private double diagonalRod;
         private double HRad;
-        private double HRadSA;
-
-        private double offsetX;
-        private double offsetY;
-        private double offsetZ;
-
-        private double offsetXCorrection = 1/0.7;
-        private double offsetYCorrection = 1/0.7;
-        private double offsetZCorrection = 1/0.7;
-
-        private double xxPerc;
-        private double yyPerc;
-        private double zzPerc;
-
-        private double A;
-        private double B;
-        private double C;
-
-        private double DA;
-        private double DB;
-        private double DC;
-
-        private double zProbe;
 
         private double probingHeight = 100;
 
@@ -75,48 +62,7 @@ namespace deltaKinematics
         private double accuracy = 0.001;
         private double accuracy2 = 0.025;
 
-        private double XYZAvg;
-
-        private double calculationXYZAvg;
-        private double offsetXYZ;
-
-        private int t = 0;
-
         private string comboBoxZMinimumValue;
-        private double towerXRotation;
-        private double towerYRotation;
-        private double towerZRotation;
-
-        //XYZ offset
-        //X
-        private double xxOppPerc = 0.5;
-        private double xyPerc = 0.25;
-        private double xyOppPerc = 0.25;
-        private double xzPerc = 0.25;
-        private double xzOppPerc = 0.25;
-
-        //Y
-        private double yyOppPerc = 0.5;
-        private double yxPerc = 0.25;
-        private double yxOppPerc = 0.25;
-        private double yzPerc = 0.25;
-        private double yzOppPerc = 0.25;
-
-        //Z
-        private double zzOppPerc = 0.5;
-        private double zxPerc = 0.25;
-        private double zxOppPerc = 0.25;
-        private double zyPerc = 0.25;
-        private double zyOppPerc = 0.25;
-
-        //diagonal rod
-        private double deltaTower = 0.13083;
-        private double deltaOpp = 0.21083;
-
-        //alpha rotation
-        private double alphaRotationPercentageX = 1.725;
-        private double alphaRotationPercentageY = 1.725;
-        private double alphaRotationPercentageZ = 1.725;
 
         private double zProbeSpeed;
         private int analyzeCount = 0;

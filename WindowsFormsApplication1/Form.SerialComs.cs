@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Threading;
+using DeltaKinematics.Core;
 
 namespace deltaKinematics
 {
     public partial class Form1
     {
+
         // The reader thread. Continue reading as long as _continue is true.
         public void Read()
         {
@@ -22,6 +24,7 @@ namespace deltaKinematics
                     {
                         LogMessage(message + "\n");
 
+                        double zProbe = 0;
                         if (message.Contains("Z-probe:"))
                         {
                             //Z-probe: 10.66 zCorr: 0
@@ -231,10 +234,10 @@ namespace deltaKinematics
                                     {
                                         //get diagonal rod percentages
 
-                                        deltaTower = ((TempProbeHeight.X - ProbeHeight.X) +
+                                        DiagonalRod.deltaTower = ((TempProbeHeight.X - ProbeHeight.X) +
                                                       (TempProbeHeight.Y - ProbeHeight.Y) +
                                                       (TempProbeHeight.Z - ProbeHeight.Z)) / 3;
-                                        deltaOpp = ((TempProbeHeight.XOpp - ProbeHeight.XOpp) +
+                                        DiagonalRod.deltaOpp = ((TempProbeHeight.XOpp - ProbeHeight.XOpp) +
                                                     (TempProbeHeight.YOpp - ProbeHeight.YOpp) +
                                                     (TempProbeHeight.ZOpp - ProbeHeight.ZOpp)) / 3;
 
@@ -274,8 +277,8 @@ namespace deltaKinematics
                                             Thread.Sleep(pauseTimeSet);
 
                                             //set X offset
-                                            _serialPort.WriteLine("M206 T1 P893 S" + (offsetX + 80).ToString());
-                                            LogConsole("Setting offset X to: " + (offsetX + 80).ToString() + "\n");
+                                            _serialPort.WriteLine("M206 T1 P893 S" + (Offset.X + 80).ToString());
+                                            LogConsole("Setting offset X to: " + (Offset.X + 80).ToString() + "\n");
                                             Thread.Sleep(pauseTimeSet);
                                         }
 
@@ -287,33 +290,33 @@ namespace deltaKinematics
                                     {
                                         //get X offset percentages
 
-                                        offsetXCorrection = Math.Abs(1 / (ProbeHeight.X - TempProbeHeight.X));
-                                        xxOppPerc =
+                                        Offset.XCorrection = Math.Abs(1 / (ProbeHeight.X - TempProbeHeight.X));
+                                        OffsetPercent.xxOppPerc =
                                             Math.Abs((ProbeHeight.XOpp - TempProbeHeight.XOpp) /
                                                      (ProbeHeight.X - TempProbeHeight.X));
-                                        xyPerc =
+                                        OffsetPercent.xyPerc =
                                             Math.Abs((ProbeHeight.Y - TempProbeHeight.Y) /
                                                      (ProbeHeight.X - TempProbeHeight.X));
-                                        xyOppPerc =
+                                        OffsetPercent.xyOppPerc =
                                             Math.Abs((ProbeHeight.YOpp - TempProbeHeight.YOpp) /
                                                      (ProbeHeight.X - TempProbeHeight.X));
-                                        xzPerc =
+                                        OffsetPercent.xzPerc =
                                             Math.Abs((ProbeHeight.Z - TempProbeHeight.Z) /
                                                      (ProbeHeight.X - TempProbeHeight.X));
-                                        xzOppPerc =
+                                        OffsetPercent.xzOppPerc =
                                             Math.Abs((ProbeHeight.ZOpp - TempProbeHeight.ZOpp) /
                                                      (ProbeHeight.X - TempProbeHeight.X));
 
                                         if (_serialPort.IsOpen)
                                         {
                                             //reset X offset
-                                            _serialPort.WriteLine("M206 T1 P893 S" + (offsetX).ToString());
-                                            LogConsole("Setting offset X to: " + (offsetX).ToString() + "\n");
+                                            _serialPort.WriteLine("M206 T1 P893 S" + (Offset.X).ToString());
+                                            LogConsole("Setting offset X to: " + (Offset.X).ToString() + "\n");
                                             Thread.Sleep(pauseTimeSet);
 
                                             //set Y offset
-                                            _serialPort.WriteLine("M206 T1 P895 S" + (offsetY + 80).ToString());
-                                            LogConsole("Setting offset Y to: " + (offsetY + 80).ToString() + "\n");
+                                            _serialPort.WriteLine("M206 T1 P895 S" + (Offset.Y + 80).ToString());
+                                            LogConsole("Setting offset Y to: " + (Offset.Y + 80).ToString() + "\n");
                                             Thread.Sleep(pauseTimeSet);
                                         }
 
@@ -325,33 +328,33 @@ namespace deltaKinematics
                                     {
                                         //get Y offset percentages
 
-                                        offsetYCorrection = Math.Abs(1 / (ProbeHeight.Y - TempProbeHeight.Y));
-                                        yyOppPerc =
+                                        Offset.YCorrection = Math.Abs(1 / (ProbeHeight.Y - TempProbeHeight.Y));
+                                        OffsetPercent.yyOppPerc =
                                             Math.Abs((ProbeHeight.YOpp - TempProbeHeight.YOpp) /
                                                      (ProbeHeight.Y - TempProbeHeight.Y));
-                                        yxPerc =
+                                        OffsetPercent.yxPerc =
                                             Math.Abs((ProbeHeight.X - TempProbeHeight.X) /
                                                      (ProbeHeight.Y - TempProbeHeight.Y));
-                                        yxOppPerc =
+                                        OffsetPercent.yxOppPerc =
                                             Math.Abs((ProbeHeight.XOpp - TempProbeHeight.XOpp) /
                                                      (ProbeHeight.Y - TempProbeHeight.Y));
-                                        yzPerc =
+                                        OffsetPercent.yzPerc =
                                             Math.Abs((ProbeHeight.Z - TempProbeHeight.Z) /
                                                      (ProbeHeight.Y - TempProbeHeight.Y));
-                                        yzOppPerc =
+                                        OffsetPercent.yzOppPerc =
                                             Math.Abs((ProbeHeight.ZOpp - TempProbeHeight.ZOpp) /
                                                      (ProbeHeight.Y - TempProbeHeight.Y));
 
                                         if (_serialPort.IsOpen)
                                         {
                                             //reset Y offset
-                                            _serialPort.WriteLine("M206 T1 P895 S" + (offsetY).ToString());
-                                            LogConsole("Setting offset Y to: " + (offsetY).ToString() + "\n");
+                                            _serialPort.WriteLine("M206 T1 P895 S" + (Offset.Y).ToString());
+                                            LogConsole("Setting offset Y to: " + (Offset.Y).ToString() + "\n");
                                             Thread.Sleep(pauseTimeSet);
 
                                             //set Z offset
-                                            _serialPort.WriteLine("M206 T1 P897 S" + (offsetZ + 80).ToString());
-                                            LogConsole("Setting offset Z to: " + (offsetZ + 80).ToString() + "\n");
+                                            _serialPort.WriteLine("M206 T1 P897 S" + (Offset.Z + 80).ToString());
+                                            LogConsole("Setting offset Z to: " + (Offset.Z + 80).ToString() + "\n");
                                             Thread.Sleep(pauseTimeSet);
                                         }
 
@@ -363,33 +366,33 @@ namespace deltaKinematics
                                     {
                                         //get Z offset percentages
 
-                                        offsetZCorrection = Math.Abs(1 / (ProbeHeight.Z - TempProbeHeight.Z));
-                                        zzOppPerc =
+                                        Offset.ZCorrection = Math.Abs(1 / (ProbeHeight.Z - TempProbeHeight.Z));
+                                        OffsetPercent.zzOppPerc =
                                             Math.Abs((ProbeHeight.ZOpp - TempProbeHeight.ZOpp) /
                                                      (ProbeHeight.Z - TempProbeHeight.Z));
-                                        zxPerc =
+                                        OffsetPercent.zxPerc =
                                             Math.Abs((ProbeHeight.X - TempProbeHeight.X) /
                                                      (ProbeHeight.Z - TempProbeHeight.Z));
-                                        zxOppPerc =
+                                        OffsetPercent.zxOppPerc =
                                             Math.Abs((ProbeHeight.XOpp - TempProbeHeight.XOpp) /
                                                      (ProbeHeight.Z - TempProbeHeight.Z));
-                                        zyPerc =
+                                        OffsetPercent.zyPerc =
                                             Math.Abs((ProbeHeight.Y - TempProbeHeight.Y) /
                                                      (ProbeHeight.Z - TempProbeHeight.Z));
-                                        zyOppPerc =
+                                        OffsetPercent.zyOppPerc =
                                             Math.Abs((ProbeHeight.YOpp - TempProbeHeight.YOpp) /
                                                      (ProbeHeight.Z - TempProbeHeight.Z));
 
                                         if (_serialPort.IsOpen)
                                         {
                                             //set Z offset
-                                            _serialPort.WriteLine("M206 T1 P897 S" + (offsetZ).ToString());
-                                            LogConsole("Setting offset Z to: " + (offsetZ).ToString() + "\n");
+                                            _serialPort.WriteLine("M206 T1 P897 S" + (Offset.Z).ToString());
+                                            LogConsole("Setting offset Z to: " + (Offset.Z).ToString() + "\n");
                                             Thread.Sleep(pauseTimeSet);
 
                                             //set alpha rotation offset perc X
-                                            _serialPort.WriteLine("M206 T3 P901 X" + (A + 1).ToString());
-                                            LogConsole("Setting Alpha A to: " + (A + 1).ToString() + "\n");
+                                            _serialPort.WriteLine("M206 T3 P901 X" + (Towers.A + 1).ToString());
+                                            LogConsole("Setting Alpha A to: " + (Towers.A + 1).ToString() + "\n");
                                             Thread.Sleep(pauseTimeSet);
                                         }
 
@@ -402,7 +405,7 @@ namespace deltaKinematics
                                     {
                                         //get A alpha rotation
 
-                                        alphaRotationPercentageX = (2 /
+                                        AlphaRotationPercentage.X = (2 /
                                                                     Math.Abs((ProbeHeight.YOpp - ProbeHeight.ZOpp) -
                                                                              (TempProbeHeight.YOpp -
                                                                               TempProbeHeight.ZOpp)));
@@ -410,13 +413,13 @@ namespace deltaKinematics
                                         if (_serialPort.IsOpen)
                                         {
                                             //set alpha rotation offset perc X
-                                            _serialPort.WriteLine("M206 T3 P901 X" + (A).ToString());
-                                            LogConsole("Setting Alpha A to: " + (A).ToString() + "\n");
+                                            _serialPort.WriteLine("M206 T3 P901 X" + (Towers.A).ToString());
+                                            LogConsole("Setting Alpha A to: " + (Towers.A).ToString() + "\n");
                                             Thread.Sleep(pauseTimeSet);
 
                                             //set alpha rotation offset perc Y
-                                            _serialPort.WriteLine("M206 T3 P905 X" + (B + 1).ToString());
-                                            LogConsole("Setting Alpha B to: " + (B + 1).ToString() + "\n");
+                                            _serialPort.WriteLine("M206 T3 P905 X" + (Towers.B + 1).ToString());
+                                            LogConsole("Setting Alpha B to: " + (Towers.B + 1).ToString() + "\n");
                                             Thread.Sleep(pauseTimeSet);
                                         }
 
@@ -428,7 +431,7 @@ namespace deltaKinematics
                                     {
                                         //get B alpha rotation
 
-                                        alphaRotationPercentageY = (2 /
+                                        AlphaRotationPercentage.Y = (2 /
                                                                     Math.Abs((ProbeHeight.ZOpp - ProbeHeight.XOpp) -
                                                                              (TempProbeHeight.ZOpp -
                                                                               TempProbeHeight.XOpp)));
@@ -436,13 +439,13 @@ namespace deltaKinematics
                                         if (_serialPort.IsOpen)
                                         {
                                             //set alpha rotation offset perc Y
-                                            _serialPort.WriteLine("M206 T3 P905 X" + (B).ToString());
-                                            LogConsole("Setting Alpha B to: " + (B).ToString() + "\n");
+                                            _serialPort.WriteLine("M206 T3 P905 X" + (Towers.B).ToString());
+                                            LogConsole("Setting Alpha B to: " + (Towers.B).ToString() + "\n");
                                             Thread.Sleep(pauseTimeSet);
 
                                             //set alpha rotation offset perc Z
-                                            _serialPort.WriteLine("M206 T3 P909 X" + (C + 1).ToString());
-                                            LogConsole("Setting Alpha C to: " + (C + 1).ToString() + "\n");
+                                            _serialPort.WriteLine("M206 T3 P909 X" + (Towers.C + 1).ToString());
+                                            LogConsole("Setting Alpha C to: " + (Towers.C + 1).ToString() + "\n");
                                             Thread.Sleep(pauseTimeSet);
                                         }
 
@@ -454,7 +457,7 @@ namespace deltaKinematics
                                     {
                                         //get C alpha rotation
 
-                                        alphaRotationPercentageZ = (2 /
+                                        AlphaRotationPercentage.Z = (2 /
                                                                     Math.Abs((ProbeHeight.XOpp - ProbeHeight.YOpp) -
                                                                              (TempProbeHeight.XOpp -
                                                                               TempProbeHeight.YOpp)));
@@ -462,14 +465,13 @@ namespace deltaKinematics
                                         if (_serialPort.IsOpen)
                                         {
                                             //set alpha rotation offset perc Z
-                                            _serialPort.WriteLine("M206 T3 P909 X" + (C).ToString());
-                                            LogConsole("Setting Alpha C to: " + (C).ToString() + "\n");
+                                            _serialPort.WriteLine("M206 T3 P909 X" + (Towers.C).ToString());
+                                            LogConsole("Setting Alpha C to: " + (Towers.C).ToString() + "\n");
                                             Thread.Sleep(pauseTimeSet);
 
                                         }
 
-                                        LogConsole("Alpha offset percentages: " + alphaRotationPercentageX + ", " +
-                                                   alphaRotationPercentageY + ", and" + alphaRotationPercentageZ + "\n");
+                                        LogConsole("Alpha offset percentages: " + AlphaRotationPercentage.X + ", " + AlphaRotationPercentage.Y + ", and" + AlphaRotationPercentage.Z + "\n");
 
                                         advancedCalibration = 0;
                                         advancedCalCount = 0;
@@ -557,46 +559,46 @@ namespace deltaKinematics
                             }
                             else if (intParse == 893)
                             {
-                                offsetX = doubleParse2;
+                                Offset.X = doubleParse2;
                             }
                             else if (intParse == 895)
                             {
-                                offsetY = doubleParse2;
+                                Offset.Y = doubleParse2;
                             }
                             else if (intParse == 897)
                             {
-                                offsetZ = doubleParse2;
+                                Offset.Z = doubleParse2;
                             }
                             else if (intParse == 901)
                             {
-                                A = doubleParse2;
+                                Towers.A = doubleParse2;
                             }
                             else if (intParse == 905)
                             {
-                                B = doubleParse2;
+                                Towers.B = doubleParse2;
                             }
                             else if (intParse == 909)
                             {
-                                C = doubleParse2;
+                                Towers.C = doubleParse2;
                             }
                             else if (intParse == 913)
                             {
-                                DA = doubleParse2;
+                                Towers.DA = doubleParse2;
                             }
                             else if (intParse == 917)
                             {
-                                DB = doubleParse2;
+                                Towers.DB = doubleParse2;
                             }
                             else if (intParse == 921)
                             {
-                                DC = doubleParse2;
+                                Towers.DC = doubleParse2;
 
                                 LogConsole("EEProm:  Steps:" + stepsPerMM + ", X Max:" + xMaxLength + ", Y Max:" +
                                            yMaxLength + ", Z Max:" + zMaxLength + ", Z-Probe Offset:" + zProbe +
                                            ", Diagonal Rod:" + diagonalRod + ", Horizontal Radius:" + HRad +
-                                           ", X Offset:" + offsetX + ", Y Offset:" + offsetY + ", Z Offset:" + offsetZ +
-                                           ", Alpha A:" + A + ", Alpha B:" + B + ",  Alpha C:" + C + ", Delta A:" + DA +
-                                           ", Delta B:" + DB + ", and Delta C:" + DC + "\n");
+                                           ", X Offset:" + Offset.X + ", Y Offset:" + Offset.Y + ", Z Offset:" + Offset.Z +
+                                           ", Alpha A:" + Towers.A + ", Alpha B:" + Towers.B + ",  Alpha C:" + Towers.C + ", Delta A:" + Towers.DA +
+                                           ", Delta B:" + Towers.DB + ", and Delta C:" + Towers.DC + "\n");
                                 LogConsole("EEProm captured, beginning calibration.");
 
                                 // Once the program has the EEProm stored, calibration initiates

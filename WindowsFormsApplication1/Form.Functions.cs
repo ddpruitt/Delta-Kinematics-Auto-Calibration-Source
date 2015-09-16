@@ -26,29 +26,29 @@ namespace deltaKinematics
 
                 //XYZ offset
                 //X
-                xxOppPerc = Convert.ToDouble(textxxOppPerc.Text);
-                xyPerc = Convert.ToDouble(textxyPerc.Text);
-                xyOppPerc = Convert.ToDouble(textxyOppPerc.Text);
-                xzPerc = Convert.ToDouble(textxzPerc.Text);
-                xzOppPerc = Convert.ToDouble(textxzOppPerc.Text);
+                OffsetPercent.xxOppPerc = Convert.ToDouble(textxxOppPerc.Text);
+                OffsetPercent.xyPerc = Convert.ToDouble(textxyPerc.Text);
+                OffsetPercent.xyOppPerc = Convert.ToDouble(textxyOppPerc.Text);
+                OffsetPercent.xzPerc = Convert.ToDouble(textxzPerc.Text);
+                OffsetPercent.xzOppPerc = Convert.ToDouble(textxzOppPerc.Text);
 
                 //Y
-                yyOppPerc = Convert.ToDouble(textyyOppPerc.Text);
-                yxPerc = Convert.ToDouble(textyxPerc.Text);
-                yxOppPerc = Convert.ToDouble(textyxOppPerc.Text);
-                yzPerc = Convert.ToDouble(textyzPerc.Text);
-                yzOppPerc = Convert.ToDouble(textyzOppPerc.Text);
+                OffsetPercent.yyOppPerc = Convert.ToDouble(textyyOppPerc.Text);
+                OffsetPercent.yxPerc = Convert.ToDouble(textyxPerc.Text);
+                OffsetPercent.yxOppPerc = Convert.ToDouble(textyxOppPerc.Text);
+                OffsetPercent.yzPerc = Convert.ToDouble(textyzPerc.Text);
+                OffsetPercent.yzOppPerc = Convert.ToDouble(textyzOppPerc.Text);
 
                 //Z
-                zzOppPerc = Convert.ToDouble(textzzOppPerc.Text);
-                zxPerc = Convert.ToDouble(textzxPerc.Text);
-                zxOppPerc = Convert.ToDouble(textzxOppPerc.Text);
-                zyPerc = Convert.ToDouble(textzyPerc.Text);
-                zyOppPerc = Convert.ToDouble(textzyOppPerc.Text);
+                OffsetPercent.zzOppPerc = Convert.ToDouble(textzzOppPerc.Text);
+                OffsetPercent.zxPerc = Convert.ToDouble(textzxPerc.Text);
+                OffsetPercent.zxOppPerc = Convert.ToDouble(textzxOppPerc.Text);
+                OffsetPercent.zyPerc = Convert.ToDouble(textzyPerc.Text);
+                OffsetPercent.zyOppPerc = Convert.ToDouble(textzyOppPerc.Text);
 
                 //diagonal rod
-                deltaTower = Convert.ToDouble(textDeltaTower.Text);
-                deltaOpp = Convert.ToDouble(textDeltaOpp.Text);
+                DiagonalRod.deltaTower = Convert.ToDouble(textDeltaTower.Text);
+                DiagonalRod.deltaOpp = Convert.ToDouble(textDeltaOpp.Text);
 
                 zProbeSpeed = int.Parse(textProbingSpeed.Text);
 
@@ -100,30 +100,30 @@ namespace deltaKinematics
 
         public void SetAdvancedCalVars()
         {
-            Invoke((MethodInvoker)delegate { this.textDeltaTower.Text = Math.Round(deltaTower, 3).ToString(); });
-            Invoke((MethodInvoker)delegate { this.textDeltaOpp.Text = Math.Round(deltaOpp, 3).ToString(); });
+            Invoke((MethodInvoker)delegate { this.textDeltaTower.Text = Math.Round(DiagonalRod.deltaTower, 3).ToString(); });
+            Invoke((MethodInvoker)delegate { this.textDeltaOpp.Text = Math.Round(DiagonalRod.deltaOpp, 3).ToString(); });
             Invoke((MethodInvoker)delegate { this.textHRadRatio.Text = Math.Round(HRadRatio, 3).ToString(); });
 
-            Invoke((MethodInvoker)delegate { this.textxxPerc.Text = Math.Round(offsetXCorrection, 3).ToString(); });
-            Invoke((MethodInvoker)delegate { this.textxxOppPerc.Text = Math.Round(xxOppPerc, 3).ToString(); });
-            Invoke((MethodInvoker)delegate { this.textxyPerc.Text = Math.Round(xyPerc, 3).ToString(); });
-            Invoke((MethodInvoker)delegate { this.textxyOppPerc.Text = Math.Round(xyOppPerc, 3).ToString(); });
-            Invoke((MethodInvoker)delegate { this.textxzPerc.Text = Math.Round(xzPerc, 3).ToString(); });
-            Invoke((MethodInvoker)delegate { this.textxzOppPerc.Text = Math.Round(xzOppPerc, 3).ToString(); });
+            Invoke((MethodInvoker)delegate { this.textxxPerc.Text = Math.Round(Offset.XCorrection, 3).ToString(); });
+            Invoke((MethodInvoker)delegate { this.textxxOppPerc.Text = Math.Round(OffsetPercent.xxOppPerc, 3).ToString(); });
+            Invoke((MethodInvoker)delegate { this.textxyPerc.Text = Math.Round(OffsetPercent.xyPerc, 3).ToString(); });
+            Invoke((MethodInvoker)delegate { this.textxyOppPerc.Text = Math.Round(OffsetPercent.xyOppPerc, 3).ToString(); });
+            Invoke((MethodInvoker)delegate { this.textxzPerc.Text = Math.Round(OffsetPercent.xzPerc, 3).ToString(); });
+            Invoke((MethodInvoker)delegate { this.textxzOppPerc.Text = Math.Round(OffsetPercent.xzOppPerc, 3).ToString(); });
 
-            Invoke((MethodInvoker)delegate { this.textyyPerc.Text = Math.Round(offsetYCorrection, 3).ToString(); });
-            Invoke((MethodInvoker)delegate { this.textyyOppPerc.Text = Math.Round(yyOppPerc, 3).ToString(); });
-            Invoke((MethodInvoker)delegate { this.textyxPerc.Text = Math.Round(yxPerc, 3).ToString(); });
-            Invoke((MethodInvoker)delegate { this.textyxOppPerc.Text = Math.Round(yxOppPerc, 3).ToString(); });
-            Invoke((MethodInvoker)delegate { this.textyzPerc.Text = Math.Round(yzPerc, 3).ToString(); });
-            Invoke((MethodInvoker)delegate { this.textyzOppPerc.Text = Math.Round(yzOppPerc, 3).ToString(); });
+            Invoke((MethodInvoker)delegate { this.textyyPerc.Text = Math.Round(Offset.YCorrection, 3).ToString(); });
+            Invoke((MethodInvoker)delegate { this.textyyOppPerc.Text = Math.Round(OffsetPercent.yyOppPerc, 3).ToString(); });
+            Invoke((MethodInvoker)delegate { this.textyxPerc.Text = Math.Round(OffsetPercent.yxPerc, 3).ToString(); });
+            Invoke((MethodInvoker)delegate { this.textyxOppPerc.Text = Math.Round(OffsetPercent.yxOppPerc, 3).ToString(); });
+            Invoke((MethodInvoker)delegate { this.textyzPerc.Text = Math.Round(OffsetPercent.yzPerc, 3).ToString(); });
+            Invoke((MethodInvoker)delegate { this.textyzOppPerc.Text = Math.Round(OffsetPercent.yzOppPerc, 3).ToString(); });
 
-            Invoke((MethodInvoker)delegate { this.textzzPerc.Text = Math.Round(offsetZCorrection, 3).ToString(); });
-            Invoke((MethodInvoker)delegate { this.textzzOppPerc.Text = Math.Round(zzOppPerc, 3).ToString(); });
-            Invoke((MethodInvoker)delegate { this.textzxPerc.Text = Math.Round(zxPerc, 3).ToString(); });
-            Invoke((MethodInvoker)delegate { this.textzxOppPerc.Text = Math.Round(zxOppPerc, 3).ToString(); });
-            Invoke((MethodInvoker)delegate { this.textzyPerc.Text = Math.Round(zyPerc, 3).ToString(); });
-            Invoke((MethodInvoker)delegate { this.textzyOppPerc.Text = Math.Round(zyOppPerc, 3).ToString(); });
+            Invoke((MethodInvoker)delegate { this.textzzPerc.Text = Math.Round(Offset.ZCorrection, 3).ToString(); });
+            Invoke((MethodInvoker)delegate { this.textzzOppPerc.Text = Math.Round(OffsetPercent.zzOppPerc, 3).ToString(); });
+            Invoke((MethodInvoker)delegate { this.textzxPerc.Text = Math.Round(OffsetPercent.zxPerc, 3).ToString(); });
+            Invoke((MethodInvoker)delegate { this.textzxOppPerc.Text = Math.Round(OffsetPercent.zxOppPerc, 3).ToString(); });
+            Invoke((MethodInvoker)delegate { this.textzyPerc.Text = Math.Round(OffsetPercent.zyPerc, 3).ToString(); });
+            Invoke((MethodInvoker)delegate { this.textzyOppPerc.Text = Math.Round(OffsetPercent.zyOppPerc, 3).ToString(); });
         }
 
         //prints to printer console

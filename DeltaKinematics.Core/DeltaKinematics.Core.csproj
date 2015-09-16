@@ -40,9 +40,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AlphaRotationPercentage.cs" />
+    <Compile Include="DiagonalRod.cs" />
     <Compile Include="Iterations.cs" />
+    <Compile Include="Offset.cs" />
     <Compile Include="ProbeHeight.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TowerRotation.cs" />
+    <Compile Include="Towers.cs" />
+    <Compile Include="OffsetPercent.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
