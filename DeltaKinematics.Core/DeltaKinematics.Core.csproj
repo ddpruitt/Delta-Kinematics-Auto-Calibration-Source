@@ -41,7 +41,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AlphaRotationPercentage.cs" />
+    <Compile Include="Calibration.cs" />
+    <Compile Include="CartesianPoint.cs" />
     <Compile Include="DiagonalRod.cs" />
+    <Compile Include="Extension\NumbersExtension.cs" />
     <Compile Include="Iterations.cs" />
     <Compile Include="Offset.cs" />
     <Compile Include="ProbeHeight.cs" />
