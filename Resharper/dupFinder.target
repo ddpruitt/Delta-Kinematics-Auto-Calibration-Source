@@ -1,0 +1,6 @@
+<Target Name="AfterBuild">
+  <Exec
+    WorkingDirectory=".." 
+    Command="C:\programs\CLT\dupfinder.exe /output=&quot;dupReport.xml&quot; /show-text &quot;SolutionWithDuplicates.sln&quot;"/>
+  <XslTransformation XslInputPath="C:\programs\CLT\dupFinder.xsl" XmlInputPaths="..\dupReport.xml" OutputPaths="..\dupReport.html"/>
+</Target>

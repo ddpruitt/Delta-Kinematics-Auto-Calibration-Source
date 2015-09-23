@@ -1,0 +1,1 @@
+dupfinder /exclude=**Designer*.cs /show-text "C:\Users\darren.pruitt\Documents\GitHub\Delta-Kinematics-Auto-Calibration-Source\deltaCalCurrent.sln"
