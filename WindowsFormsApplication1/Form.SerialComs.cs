@@ -85,15 +85,7 @@ namespace deltaKinematics
 
                                 Iterations.XIterations++;
 
-                                _serialPort.WriteLine("G1 Z" + probingHeight.ToString() + " X-" +
-                                                      valueXYLarge.ToString() + " Y-" + valueXYSmall.ToString());
-                                Thread.Sleep(pauseTimeSet);
-                                _serialPort.WriteLine("G1 Z" + probingHeight.ToString() + " X0 Y0");
-                                Thread.Sleep(pauseTimeSet);
-                                _serialPort.WriteLine("G1 Z" + probingHeight.ToString() + " X" + valueXYLarge.ToString() +
-                                                      " Y" + valueXYSmall.ToString());
-                                Thread.Sleep(pauseTimeSet);
-                                _serialPort.WriteLine("G30");
+                                ProbeX0Y0();
                             }
                             else if (Iterations.XOppIterations == Iterations.IterationNum)
                             {
@@ -121,15 +113,7 @@ namespace deltaKinematics
 
                                 Iterations.YIterations++;
 
-                                _serialPort.WriteLine("G1 Z" + probingHeight.ToString() + " X" + valueXYLarge.ToString() +
-                                                      " Y-" + valueXYSmall.ToString());
-                                Thread.Sleep(pauseTimeSet);
-                                _serialPort.WriteLine("G1 Z" + probingHeight.ToString() + " X0 Y0");
-                                Thread.Sleep(pauseTimeSet);
-                                _serialPort.WriteLine("G1 Z" + probingHeight.ToString() + " X-" +
-                                                      valueXYLarge.ToString() + " Y" + valueXYSmall.ToString());
-                                Thread.Sleep(pauseTimeSet);
-                                _serialPort.WriteLine("G30");
+                                ProbeX0Y0();
                             }
                             else if (Iterations.YOppIterations == Iterations.IterationNum)
                             {
@@ -614,5 +598,17 @@ namespace deltaKinematics
             }
         }
 
+        public void ProbeX0Y0()
+        {
+            _serialPort.WriteLine("G1 Z" + probingHeight.ToString() + " X-" +
+                                  valueXYLarge.ToString() + " Y-" + valueXYSmall.ToString());
+            Thread.Sleep(pauseTimeSet);
+            _serialPort.WriteLine("G1 Z" + probingHeight.ToString() + " X0 Y0");
+            Thread.Sleep(pauseTimeSet);
+            _serialPort.WriteLine("G1 Z" + probingHeight.ToString() + " X" + valueXYLarge.ToString() +
+                                  " Y" + valueXYSmall.ToString());
+            Thread.Sleep(pauseTimeSet);
+            _serialPort.WriteLine("G30");
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 
 namespace DeltaKinematics.Core
 {
@@ -8,6 +9,8 @@ namespace DeltaKinematics.Core
         public ProbeHeight ProbeHeight { get; set; } = new ProbeHeight();
 
         public TowerRotation TowerRotation { get; set; } = new TowerRotation();
+
+        public Iterations Iterations { get; } = new Iterations();
 
         public double PlateDiameter { get; set; }
         public double CenterHeight { get; set; }
@@ -18,6 +21,48 @@ namespace DeltaKinematics.Core
 
         public CartesianPoint Top { get; set; }
         public CartesianPoint Bottom { get; set; }
+
+        public double valueZ;
+        public double valueXYLarge;
+        public double valueXYSmall;
+
+        public string comboBoxZMinimumValue;
+        public int zProbeSet = 0;
+
+        public Calibration()
+        {
+            
+        }
+
+        public void InitiateCal()
+        {
+            //set gcode specifications
+            valueZ = 0.482 * PlateDiameter;
+            valueXYLarge = 0.417 * PlateDiameter;
+            valueXYSmall = 0.241 * PlateDiameter;
+
+            //set zprobe height to zero
+
+            //if (comboBoxZMinimumValue == "Z-Probe" && Iterations.IterationNum == 0)
+            //{
+            //    zProbeSet = 1;
+            //    Thread.Sleep(pauseTimeSet);
+            //    _serialPort.WriteLine("G28");
+            //    Thread.Sleep(pauseTimeSet);
+            //    _serialPort.WriteLine("G30");
+
+            //    double heightTime = (zMaxLength / zProbeSpeed) * 1000;
+            //    Thread.Sleep(Convert.ToInt32(heightTime));
+            //}
+
+            //zero bed
+            //Thread.Sleep(pauseTimeSet);
+            //_serialPort.WriteLine("G28");
+            //Thread.Sleep(pauseTimeSet);
+            //_serialPort.WriteLine("G1 Z" + probingHeight.ToString() + " F5000");
+            //Thread.Sleep(pauseTimeSet);
+            //_serialPort.WriteLine("G30");
+        }
 
         public void AnalyzeGeometry()
         {

@@ -1,4 +1,4 @@
-namespace deltaKinematics
+namespace DeltaKinematics.Core
 {
     public class DiagonalRod
     {
